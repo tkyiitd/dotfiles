@@ -1,0 +1,1047 @@
+* Basic Config
+** Mac Specific Settings
+  Set command as meta
+#+BEGIN_SRC emacs-lisp
+(setq mac-option-key-is-meta nil)
+(setq mac-command-key-is-meta t)
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier nil)
+#+END_SRC
+
+** Better Defaults
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   user-full-name "Tarun Kumar Yadav"
+   user-mail-address "tkyiitd@gmail.com"
+   fill-column 80                                   ; Set width for automatic line breaks
+   help-window-select t                             ; Focus new help windows when opened
+   load-prefer-newer t                              ; Prefers the newest version of a file
+   inhibit-startup-screen t                         ; Disable start-up screen
+   initial-buffer-choice "~/"
+   )
+
+(column-number-mode 1)                            ; Show the column number
+(display-time-mode 1)                             ; Enable time in the mode-line
+#+END_SRC
+** Authentication
+#+BEGIN_SRC emacs-lisp
+(setq auth-sources '("~/.gnupg/shared/authinfo.gpg"
+                     "~/.authinfo.gpg"
+                     "~/.authinfo"
+                     "~/.netrc"))
+#+END_SRC
+
+* Visual Config
+** Visual Configuration
+#+BEGIN_SRC emacs-lisp
+  ;; Disable menubar, scrollbar and toolbar
+  (menu-bar-mode -1)
+  (toggle-scroll-bar -1)
+  (tool-bar-mode -1)
+  ;; Disable scroll bar in minibuffer
+  (set-window-scroll-bars (minibuffer-window) nil nil)
+  ;; Set font
+  ;; (set-default-font "Source Code Pro Light-16")
+  ;; (set-default-font "Fira Code Medium-16")
+  (set-default-font "IBM Plex Mono Medium-16")
+  ;; (set-default-font "Hack Regular-16")
+  ;; Ask "y" or "n" instead of "yes" or "no"
+  (fset 'yes-or-no-p 'y-or-n-p)
+  ;; Highlight tabulations
+  (setq-default highlight-tabs t)
+  ;; highlight current line
+  (global-hl-line-mode 1)
+
+  ;; Show trailing white spaces
+  (setq-default show-trailing-whitespace t)
+  ;; generic function to disable whitespace on some modes
+  (defun my-hide-trailing-whitespace-maybe ()
+    "Disable `show-trailing-whitespace' in selected modes."
+    (when (derived-mode-p 'shell-mode
+                          'vterm-mode
+                          'Buffer-menu-mode
+                          'mu4e-view-mode
+                          'mu4e-headers-mode
+                          ;;'some-other-mode
+                          )
+      (setq show-trailing-whitespace nil)))
+  (add-hook 'after-change-major-mode-hook
+            'my-hide-trailing-whitespace-maybe)
+
+  ;; scroll half page with C-v and M-v
+  (use-package view)
+  (global-set-key (kbd "C-v") 'View-scroll-half-page-forward)
+  (global-set-key (kbd "M-v") 'View-scroll-half-page-backward)
+
+  ;; open window vertically
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 0)
+
+  ;; Disable visual bell
+  (setq ring-bell-function 'ignore)
+
+  ;; scroll only as far as point goes
+  (setq scroll-conservatively most-positive-fixnum)
+
+  (use-package all-the-icons)
+#+END_SRC
+
+** Pretty Symbols
+#+BEGIN_SRC emacs-lisp
+;; global-prettify-symbols mode
+(global-prettify-symbols-mode 1)
+(defun my/pretty-symbols ()
+  (setq prettify-symbols-alist
+          '(("lambda" . 955)
+            ("->" . ≈8594)
+            ("=>" . 8658)
+            ("map" . 8614)
+            ("<=" . 8804)
+            (">=" . 8805)
+            ("<-" . 8592)
+            ("!=" . 8800))))
+(add-hook 'c-mode-hook 'my/pretty-symbols)
+(add-hook 'c++-mode-hook 'my/pretty-symbols)
+#+END_SRC
+
+** Theme
+#+BEGIN_SRC emacs-lisp
+    ;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (use-package doom-themes
+    :config
+     ;;(load-theme 'doom-gruvbox t)
+     (load-theme 'doom-nord t)
+  )
+
+(use-package solaire-mode
+  :custom (solaire-mode-remap-fringe t)
+  :config
+  (solaire-mode-swap-bg)
+  (solaire-global-mode +1))
+#+END_SRC
+
+** Modeline
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+  :config (doom-modeline-mode))
+#+END_SRC
+
+** Indentation
+#+BEGIN_SRC emacs-lisp
+  ;; (electric-indent-mode 1)
+  ;; ;; auto-indent on paste
+  ;; (dolist (command '(yank yank-pop))
+  ;;   (eval `(defadvice ,command (after indent-region activate)
+  ;; 	   (and (not current-prefix-arg)
+  ;; 		(member major-mode '(emacs-lisp-mode python-mode c-mode c++-mode))
+  ;; 		(let ((mark-even-if-inactive transient-mark-mode))
+  ;; 		  (indent-region (region-beginning) (region-end) nil))))))
+
+  ;; aggressive-indent
+  (use-package aggressive-indent
+    :hook (prog-mode . aggressive-indent-mode))
+#+END_SRC
+
+** Parenthesis
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode 1)
+;; Highlight corresponding parentheses when cursor is on one
+(show-paren-mode t)
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+#+END_SRC
+
+** hungry-delete
+#+BEGIN_SRC emacs-lisp
+  ;; deleting a whitespace character will delete all whitespace until the next non-whitespace character
+  (use-package hungry-delete
+    :config(global-hungry-delete-mode)
+  )
+
+#+END_SRC
+
+** UTF-8 Encoding
+#+BEGIN_SRC emacs-lisp
+(set-language-environment 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+#+END_SRC
+
+* Files and Navigation
+** Backup Files
+#+BEGIN_SRC emacs-lisp
+;; ---------- Backup Files ----------
+;; Save backup files in a dedicated directory
+(setq backup-directory-alist '(("." . "~/.emacs.d/backup_files"))
+    backup-by-copying t    ; Don't delink hardlinks
+    version-control t      ; Use version numbers on backups
+    delete-old-versions t  ; Automatically delete excess backups
+    kept-new-versions 20   ; how many of the newest versions to keep
+    kept-old-versions 5    ; and how many of the old
+    )
+#+END_SRC
+
+** Autoload File
+#+BEGIN_SRC emasc-lisp
+;; if file changes on disk, reload it
+(global-auto-revert-mode 1)
+(setq auto-revert-verbose nil)
+
+;; reload last location in file
+(save-place-mode t)
+#+END_SRC
+
+** expand-region
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+  :config (bind-key "C-=" #'er/expand-region)
+  )
+#+END_SRC
+
+** avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy)
+  (global-set-key (kbd "C-:") 'avy-goto-char)
+  (global-set-key (kbd "M-g f") 'avy-goto-line)
+#+END_SRC
+** undo-tree
+#+BEGIN_SRC emacs-lisp
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode 1)
+  ;; persist undo-histroy across sessions
+  (setq undo-tree-auto-save-history t)
+  ;; central undo directory
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+  :custom
+  (undo-tree-visualizer-timestamps t)
+  (undo-tree-visualizer-diff t)
+)
+#+END_SRC
+
+** dired
+#+BEGIN_SRC emacs-lisp
+  (use-package dired
+    :ensure nil
+    :delight "Dired "
+    :custom
+    ;; Set up DWIM (“do what I mean”) for dired.
+    ;; When I’ve got two dired windows side-by-side, and I move or copy files in one window,
+    ;; this sets the default location to the other window.
+    (dired-dwim-target t)
+
+    ;; Kill buffers of files/directories that are deleted in dired.
+    (dired-clean-up-buffers-too t)
+
+    ;; Always copy directories recursively instead of asking every time.
+    (dired-recursive-copies 'always)
+
+    ;; Ask before recursively deleting a directory, though.
+    (dired-recursive-deletes 'top)
+    ;; move to trash instead of shell:rm
+    (delete-by-moving-to-trash t)
+    (dired-listing-switches "-alh")
+    )
+  ;; toggle hidden files
+  (defun dired-dotfiles-toggle ()
+    "Show/hide dot-files"
+    (interactive)
+    (when (equal major-mode 'dired-mode)
+      (if (or (not (boundp 'dired-dotfiles-show-p)) dired-dotfiles-show-p) ; if currently showing
+          (progn
+            (set (make-local-variable 'dired-dotfiles-show-p) nil)
+            (message "h")
+            (dired-mark-files-regexp "^\\\.")
+            (dired-do-kill-lines))
+        (progn (revert-buffer) ; otherwise just revert to re-show
+               (set (make-local-variable 'dired-dotfiles-show-p) t)))))
+
+  ;; Files are normally moved and copied synchronously.
+  ;; This uses emacs-async to make dired perform actions asynchronously.
+  (use-package async
+    :config
+    (dired-async-mode 1))
+
+  (use-package dired-subtree
+    :bind (:map dired-mode-map
+                ("<backtab>" . dired-subtree-cycle)
+                ("<tab>" . dired-subtree-toggle)))
+#+END_SRC
+
+** tramp
+#+BEGIN_SRC emacs-lisp
+(use-package tramp
+    :config
+    (setq tramp-default-method "rsync")
+    ;; use .ssh/config to determine ssh parameters
+    ;; using to persist ssh connection
+    (setq tramp-use-ssh-controlmaster-options nil)
+ )
+#+END_SRC
+
+** helm
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :config
+            (require 'helm-config)
+            (helm-mode 1)
+            (helm-autoresize-mode 1)
+            (bind-key "M-x" #'helm-M-x)
+            (bind-key "C-x r b" #'helm-filtered-bookmarks)
+            (bind-key "C-x C-f" #'helm-find-files)
+            (setq helm-M-x-fuzzy-match t)
+            (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+            (global-set-key (kbd "C-h SPC") 'helm-all-mark-rings)
+    )
+
+  (use-package helm-ag
+  )
+#+END_SRC
+
+** helm-swoop
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-swoop
+    :config
+    ;; Change the keybinds to whatever you like :)
+    (global-set-key (kbd "M-i") 'helm-swoop)
+    (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
+    (global-set-key (kbd "C-c M-i") 'helm-multi-swoop)
+    (global-set-key (kbd "C-x M-i") 'helm-multi-swoop-all)
+
+    ;; When doing isearch, hand the word over to helm-swoop
+    (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+    ;; From helm-swoop to helm-multi-swoop-all
+    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)
+    ;; When doing evil-search, hand the word over to helm-swoop
+    ;; (define-key evil-motion-state-map (kbd "M-i") 'helm-swoop-from-evil-search)
+
+    ;; Instead of helm-multi-swoop-all, you can also use helm-multi-swoop-current-mode
+    (define-key helm-swoop-map (kbd "M-m") 'helm-multi-swoop-current-mode-from-helm-swoop)
+
+    ;; Move up and down like isearch
+    (define-key helm-swoop-map (kbd "C-r") 'helm-previous-line)
+    (define-key helm-swoop-map (kbd "C-s") 'helm-next-line)
+    (define-key helm-multi-swoop-map (kbd "C-r") 'helm-previous-line)
+    (define-key helm-multi-swoop-map (kbd "C-s") 'helm-next-line)
+
+    ;; Save buffer when helm-multi-swoop-edit complete
+    (setq helm-multi-swoop-edit-save t)
+
+    ;; If this value is t, split window inside the current window
+    (setq helm-swoop-split-with-multiple-windows nil)
+
+    ;; Split direcion. 'split-window-vertically or 'split-window-horizontally
+    (setq helm-swoop-split-direction 'split-window-vertically)
+
+    ;; If nil, you can slightly boost invoke speed in exchange for text color
+    (setq helm-swoop-speed-or-color nil)
+
+    ;; ;; Go to the opposite side of line from the end or beginning of line
+    (setq helm-swoop-move-to-line-cycle t)
+
+    ;; Optional face for line numbers
+    ;; Face name is `helm-swoop-line-number-face`
+    (setq helm-swoop-use-line-number-face t)
+
+    ;; If you prefer fuzzy matching
+    (setq helm-swoop-use-fuzzy-match t)
+  )
+#+END_SRC
+
+** projectile
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :after helm
+  :config
+  ;;  (projectile-mode +1)
+  (helm-projectile-on)
+  (projectile-global-mode)
+  (setq projectile-completion-system 'helm)
+  ;; disable caching if working in git folder
+  ;; https://eklitzke.org/making-helm-projectile-find-file-fast-in-large-projects
+  (setq projectile-enable-caching t)
+   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+   (setq projectile-switch-project-action 'helm-projectile)
+   )
+;; treat current directory as root
+(setq projectile-require-project-root nil)
+(setq projectile-mode-line '(:eval (projectile-project-name)))
+#+END_SRC
+
+* Buffers and Window
+** ace-window
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :config
+    (global-set-key (kbd "M-o") 'ace-window)
+    )
+#+END_SRC
+
+** windmove
+#+BEGIN_SRC emacs-lisp
+(use-package windmove
+  :bind (("C-c h" . windmove-left)
+         ("C-c j" . windmove-down)
+         ("C-c k" . windmove-up)
+         ("C-c l" . windmove-right)))
+#+END_SRC
+** ibuffer
+#+BEGIN_SRC emacs-lisp
+  (use-package ibuffer
+    :config
+    (global-set-key (kbd "C-x C-b") 'ibuffer)
+    ;; Don't show filter groups if there are no buffers in that group
+    (setq ibuffer-show-empty-filter-groups nil)
+    )
+
+  ;; filter-groups
+  ;; (setq ibuffer-saved-filter-groups
+  ;;       (quote (("default"
+  ;;                ("dired" (mode . dired-mode))
+  ;;                ("emacs" (or (name . "^\\*\.\*\\*$")) (mode . emacs-lisp-mode) )
+  ;;                ("org" (mode . org-mode))
+  ;;                ("magit" (name . "\*magit"))
+  ;;                ("shell" (or (mode . eshell-mode) (mode . shell-mode) (mode . vterm-mode)) )
+  ;;                ("mu4e" (or (mode . mu4e-compose-mode) (name . "\*mu4e\*")) )
+  ;;                ("programming" (or (mode . c-mode) (mode . c++-mode) (mode . python-mode) ))
+  ;;                ))))
+  ;; (add-hook 'ibuffer-mode-hook
+  ;;           (lambda ()
+  ;;             (ibuffer-switch-to-saved-filter-groups "default")))
+
+  ;; don't show warning for delete buffer
+  (setq ibuffer-expert t)
+
+  ;; (add-hook 'ibuffer-mode-hook
+  ;;           '(ibuffer ()
+  ;;              (lambda-auto-mode 1)
+  ;;              (ibuffer-switch-to-saved-filter-groups "default")))
+
+  (use-package ibuffer-projectile
+    :after ibuffer
+    :preface
+    (defun my/ibuffer-projectile ()
+      (ibuffer-projectile-set-filter-groups)
+      (unless (eq ibuffer-sorting-mode 'alphabetic)
+        (ibuffer-do-sort-by-alphabetic)))
+    :hook (ibuffer . my/ibuffer-projectile))
+#+END_SRC
+
+** buffer-flip
+#+BEGIN_SRC emacs-lisp
+  ;; navigate buffers with C-tab and C-S-tabs
+  (use-package buffer-flip
+    :bind  (("C-<tab>" . buffer-flip)
+            :map buffer-flip-map
+            ( "C-<tab>" .   buffer-flip-forward)
+            ( "C-S-<tab>" . buffer-flip-backward)
+            ( "C-ESC" .     buffer-flip-abort))
+    :config
+    (setq buffer-flip-skip-patterns
+          ;; skip all emacs buffers
+          '(;;"^\\*helm\\b"
+            ;; "^\\*swiper\\*$"
+            ;; "^\\*Messages\\*$"
+            ;; "^\\*GNU Emacs\\*$"
+            ;; "^\\*scratch\\*$"
+            ;; "^\\*Ibuffer\\*$"
+            ;; "^\\*Warnings\\*$"
+            ;; "^\\*Compile-Log\\*$"
+            ;; "^\\*Help\\b"
+            "^\\*\\b"
+            )
+          ))
+#+END_SRC
+
+* Coding
+** General
+#+BEGIN_SRC emacs-lisp
+;; General coding
+(setq-default tab-width 4)
+;; Compilation output goes to the *compilation* buffer.
+;; This automatically scrolls the compilation window so I can always see the output.
+(setq compilation-scroll-output t)
+#+END_SRC
+
+** Folding
+#+BEGIN_SRC emacs-lisp
+;; (use-package origami)
+#+END_SRC
+
+** flycheck
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+   :delight
+  :init (global-flycheck-mode))
+#+END_SRC
+
+** company-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    ;; (setq company-idle-delay nil  ; avoid auto completion popup, use TAB
+    ;;                               ; to show it
+    ;;       company-tooltip-align-annotations t)
+    :config
+    (setq company-minimum-prefix-length 3)
+
+    (add-hook 'after-init-hook 'global-company-mode)
+    :custom
+    (company-show-numbers t)
+    )
+#+END_SRC
+
+** exec-path-from-shell
+#+BEGIN_SRC emacs-lisp
+;;(setq explicit-shell-file-name "/bin/bash")
+;;(setq shell-file-name "bash")
+;; exec-path-from-shell
+;;(setenv "SHELL" "/bin/bash")
+(use-package exec-path-from-shell)
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-envs '("PATH")
+				  ))
+#+END_SRC
+
+** vterm
+#+BEGIN_SRC emacs-lisp
+;; need to compile emacs-libvterm on mac
+;; somehow does not seem to detect cmake
+;; https://github.com/akermu/emacs-libvterm
+(use-package vterm
+ ;;    :load-path  "/Users/tarun/emacs-libvterm/")
+)
+;; https://github.com/jixiuf/vterm-toggle
+;; toggle between edit buffer and vterm buffer
+(use-package vterm-toggle)
+(global-set-key [f2] 'vterm-toggle)
+(global-set-key [C-f2] 'vterm-toggle-cd)
+
+;; you can cd to the directory where your previous buffer file exists
+;; after you have toggle to the vterm buffer with `vterm-toggle'.
+(define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+#+END_SRC
+
+** git
+#+BEGIN_SRC emacs-lisp
+(use-package magit)
+
+(use-package git-gutter
+  :delight
+  :init (global-git-gutter-mode +1))
+
+(use-package git-timemachine
+  :delight)
+#+END_SRC
+
+* Miscellaneous
+** multiple-cursors
+#+BEGIN_SRC emacs-lisp
+(use-package multiple-cursors)
+#+END_SRC
+
+** which-key
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :config
+  (which-key-mode))
+#+END_SRC
+
+** restart-emacs
+#+BEGIN_SRC emacs-lisp
+(use-package restart-emacs)
+#+END_SRC
+
+** pdf, epub
+#+BEGIN_SRC emacs-lisp
+;; read pdf
+(use-package pdf-tools
+    :config
+    (setq-default pdf-view-display-size 'fit-page)
+    (bind-keys :map pdf-view-mode-map
+               ("\\" . hydra-pdftools/body)
+               ("<s-spc>" .  pdf-view-scroll-down-or-next-page)
+               ("g"  . pdf-view-first-page)
+               ("G"  . pdf-view-last-page)
+               ("l"  . image-forward-hscroll)
+               ("h"  . image-backward-hscroll)
+               ("j"  . pdf-view-next-page)
+               ("k"  . pdf-view-previous-page)
+               ("e"  . pdf-view-goto-page)
+               ("u"  . pdf-view-revert-buffer)
+               ("al" . pdf-annot-list-annotations)
+               ("ad" . pdf-annot-delete)
+               ("aa" . pdf-annot-attachment-dired)
+               ("am" . pdf-annot-add-markup-annotation)
+               ("at" . pdf-annot-add-text-annotation)
+               ("y"  . pdf-view-kill-ring-save)
+               ("i"  . pdf-misc-display-metadata)
+               ("s"  . pdf-occur)
+               ("b"  . pdf-view-set-slice-from-bounding-box)
+               ("r"  . pdf-view-reset-slice)))
+  ;; read epub
+  (use-package nov)
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+#+END_SRC
+
+** Mail
+#+BEGIN_SRC emacs-lisp
+  (use-package mu4e
+    :load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+
+  ;; setup using https://gist.github.com/areina/3879626
+  ;; or https://github.com/peterwvj/offlineimap-imapfilter-config
+  ;; later found a better guide: https://notanumber.io/2016-10-03/better-email-with-mu4e/
+  ;; default
+  (setq mu4e-maildir (expand-file-name "~/mail/tkyiitd"))
+
+  (setq mu4e-drafts-folder "/[Gmail].Drafts")
+  (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+  (setq mu4e-trash-folder  "/[Gmail].Trash")
+  (setq mu4e-refile-folder "/Archive")
+
+  ;; don't save message to Sent Messages, GMail/IMAP will take care of this
+  (setq mu4e-sent-messages-behavior 'delete)
+
+  ;; setup some handy shortcuts
+  (setq mu4e-maildir-shortcuts
+        '(("/INBOX"             . ?i)
+          ("/[Gmail].Sent Mail" . ?s)
+          ("/[Gmail].Trash"     . ?t)))
+
+  (setq
+   mail-user-agent 'mu4e-user-agent
+   mu4e-update-mail-and-index t
+   ;; allow for updating mail using 'U' in the main view:
+   mu4e-get-mail-command "offlineimap -q"
+   ;; show images
+   mu4e-show-images t
+   mu4e-attachments-dir "~/Downloads"
+   ;; This enabled the thread like viewing of email similar to gmail's UI.
+   mu4e-headers-include-related t
+   message-kill-buffer-on-exit t
+   mu4e-confirm-quit nil
+   ;; Display the sender’s email address along with their name.
+   mu4e-view-show-addresses t
+   mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
+   )
+  ;; Hit C-c C-o to open a URL in the browser.
+  (define-key mu4e-view-mode-map (kbd "C-c C-o") 'mu4e~view-browse-url-from-binding)
+
+  ;; use imagemagick, if available
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+
+
+  ;; add option to view html message in a browser
+  ;; `aV` in view to activate
+  (add-to-list 'mu4e-view-actions
+               '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+  ;; Spell checking ftw.
+  (add-hook 'mu4e-compose-mode-hook 'flyspell-mode)
+
+  (require 'smtpmail)
+
+  (setq message-send-mail-function 'smtpmail-send-it
+        starttls-use-gnutls t
+        smtpmail-starttls-credentials
+        '(("smtp.gmail.com" 587 nil nil))
+        smtpmail-auth-credentials
+        (expand-file-name "~/.authinfo.gpg")
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587
+        smtpmail-debug-info t)
+
+
+#+END_SRC
+
+* Keybindings
+** key-chord
+#+BEGIN_SRC emacs-lisp
+  (use-package key-chord
+    :config
+    (key-chord-mode 1)
+    )
+
+#+END_SRC
+
+** Hydra
+#+BEGIN_SRC emacs-lisp
+(use-package hydra)
+#+END_SRC
+
+*** Movement
+#+BEGIN_SRC emacs-lisp
+  ;; don't hold control key for movement
+  (global-set-key (kbd "C-n")
+                  (defhydra hydra-move
+                    (:body-pre (next-line))
+                    "move"
+                    ("n" next-line)
+                    ("p" previous-line)
+                    ("f" forward-char)
+                    ("b" backward-char)
+                    ("a" beginning-of-line)
+                    ("e" move-end-of-line)
+                    ;;("v" scroll-up-command)
+                    ("v" View-scroll-half-page-forward)
+                    ;; Converting M-v to V here by analogy.
+                    ;;("V" scroll-down-command)
+                    ("V" View-scroll-half-page-backward)
+                    ("l" recenter-top-bottom)))
+#+END_SRC
+
+*** multiple-cursors
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-multiple-cursors (:hint nil)
+    "
+   Up^^             Down^^           Miscellaneous           % 2(mc/num-cursors) cursor%s(if (> (mc/num-cursors) 1) \"s\" \"\")
+  ------------------------------------------------------------------
+   [_p_]   Next     [_n_]   Next     [_l_] Edit lines  [_0_] Insert numbers
+   [_P_]   Skip     [_N_]   Skip     [_a_] Mark all    [_A_] Insert letters
+   [_M-p_] Unmark   [_M-n_] Unmark   [_s_] Search
+   [Click] Cursor at point       [_q_] Quit"
+    ("l" mc/edit-lines :exit t)
+    ("a" mc/mark-all-like-this :exit t)
+    ("n" mc/mark-next-like-this)
+    ("N" mc/skip-to-next-like-this)
+    ("M-n" mc/unmark-next-like-this)
+    ("p" mc/mark-previous-like-this)
+    ("P" mc/skip-to-previous-like-this)
+    ("M-p" mc/unmark-previous-like-this)
+    ("s" mc/mark-all-in-region-regexp :exit t)
+    ("0" mc/insert-numbers :exit t)
+    ("A" mc/insert-letters :exit t)
+    ("<mouse-1>" mc/add-cursor-on-click)
+    ;; Help with click recognition in this hydra
+    ("<down-mouse-1>" ignore)
+    ("<drag-mouse-1>" ignore)
+    ("q" nil))
+#+END_SRC
+
+*** hide-show
+#+BEGIN_SRC emacs-lisp
+(defhydra hydra-hs (:body-pre (hs-minor-mode))
+   "
+Hide^^            ^Show^            ^Toggle^    ^Navigation^
+----------------------------------------------------------------
+_h_ hide all      _s_ show all      _t_oggle    _n_ext line
+_d_ hide block    _a_ show block              _p_revious line
+_l_ hide level
+
+_SPC_ cancel
+"
+   ("s" hs-show-all)
+   ("h" hs-hide-all)
+   ("a" hs-show-block)
+   ("d" hs-hide-block)
+   ("t" hs-toggle-hiding)
+   ("l" hs-hide-level)
+   ("n" forward-line)
+   ("p" (forward-line -1))
+   ("SPC" nil)
+)
+#+END_SRC
+
+*** Transpose
+#+BEGIN_SRC emacs-lisp
+  ;; collection of transpose
+  (global-set-key (kbd "C-c m")
+                  (defhydra hydra-transpose (:color red)
+                    "Transpose"
+                    ("c" transpose-chars "characters")
+                    ("w" transpose-words "words")
+                    ("o" org-transpose-words "Org mode words")
+                    ("l" transpose-lines "lines")
+                    ("s" transpose-sentences "sentences")
+                    ("e" org-transpose-elements "Org mode elements")
+                    ("p" transpose-paragraphs "paragraphs")
+                    ("t" org-table-transpose-table-at-point "Org mode table")
+                    ("q" nil "cancel" :color blue)))
+#+END_SRC
+
+*** Compilation
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-next-error (global-map "C-x")
+    "
+  Compilation errors:
+  _j_: next error        _h_: first error    _q_uit
+  _k_: previous error    _l_: last error
+  "
+    ("`" next-error     nil)
+    ("j" next-error     nil :bind nil)
+    ("k" previous-error nil :bind nil)
+    ("h" first-error    nil :bind nil)
+    ("l" (condition-case err
+             (while t
+               (next-error))
+           (user-error nil))
+     nil :bind nil)
+    ("q" nil            nil :color blue))
+
+#+END_SRC
+
+*** Ibuffer
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-ibuffer-main (:color pink :hint nil)
+    "
+   ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
+  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
+    _k_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
+   _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
+    _j_:    v   | _*_: specific | _a_: all actions | _/_: filter
+  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
+  "
+    ("j" ibuffer-forward-line)
+    ("RET" ibuffer-visit-buffer :color blue)
+    ("k" ibuffer-backward-line)
+
+    ("m" ibuffer-mark-forward)
+    ("u" ibuffer-unmark-forward)
+    ("*" hydra-ibuffer-mark/body :color blue)
+
+    ("D" ibuffer-do-delete)
+    ("S" ibuffer-do-save)
+    ("a" hydra-ibuffer-action/body :color blue)
+
+    ("g" ibuffer-update)
+    ("s" hydra-ibuffer-sort/body :color blue)
+    ("/" hydra-ibuffer-filter/body :color blue)
+
+    ("o" ibuffer-visit-buffer-other-window "other window" :color blue)
+    ("q" quit-window "quit ibuffer" :color blue)
+    ("." nil "toggle hydra" :color blue))
+
+  (defhydra hydra-ibuffer-mark (:color teal :columns 5
+                                       :after-exit (hydra-ibuffer-main/body))
+    "Mark"
+    ("*" ibuffer-unmark-all "unmark all")
+    ("M" ibuffer-mark-by-mode "mode")
+    ("m" ibuffer-mark-modified-buffers "modified")
+    ("u" ibuffer-mark-unsaved-buffers "unsaved")
+    ("s" ibuffer-mark-special-buffers "special")
+    ("r" ibuffer-mark-read-only-buffers "read-only")
+    ("/" ibuffer-mark-dired-buffers "dired")
+    ("e" ibuffer-mark-dissociated-buffers "dissociated")
+    ("h" ibuffer-mark-help-buffers "help")
+    ("z" ibuffer-mark-compressed-file-buffers "compressed")
+    ("b" hydra-ibuffer-main/body "back" :color blue))
+
+  (defhydra hydra-ibuffer-action (:color teal :columns 4
+                                         :after-exit
+                                         (if (eq major-mode 'ibuffer-mode)
+                                             (hydra-ibuffer-main/body)))
+    "Action"
+    ("A" ibuffer-do-view "view")
+    ("E" ibuffer-do-eval "eval")
+    ("F" ibuffer-do-shell-command-file "shell-command-file")
+    ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
+    ("H" ibuffer-do-view-other-frame "view-other-frame")
+    ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
+    ("M" ibuffer-do-toggle-modified "toggle-modified")
+    ("O" ibuffer-do-occur "occur")
+    ("P" ibuffer-do-print "print")
+    ("Q" ibuffer-do-query-replace "query-replace")
+    ("R" ibuffer-do-rename-uniquely "rename-uniquely")
+    ("T" ibuffer-do-toggle-read-only "toggle-read-only")
+    ("U" ibuffer-do-replace-regexp "replace-regexp")
+    ("V" ibuffer-do-revert "revert")
+    ("W" ibuffer-do-view-and-eval "view-and-eval")
+    ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
+    ("b" nil "back"))
+
+  (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
+    "Sort"
+    ("i" ibuffer-invert-sorting "invert")
+    ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
+    ("v" ibuffer-do-sort-by-recency "recently used")
+    ("s" ibuffer-do-sort-by-size "size")
+    ("f" ibuffer-do-sort-by-filename/process "filename")
+    ("m" ibuffer-do-sort-by-major-mode "mode")
+    ("b" hydra-ibuffer-main/body "back" :color blue))
+
+  (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
+    "Filter"
+    ("m" ibuffer-filter-by-used-mode "mode")
+    ("M" ibuffer-filter-by-derived-mode "derived mode")
+    ("n" ibuffer-filter-by-name "name")
+    ("c" ibuffer-filter-by-content "content")
+    ("e" ibuffer-filter-by-predicate "predicate")
+    ("f" ibuffer-filter-by-filename "filename")
+    (">" ibuffer-filter-by-size-gt "size")
+    ("<" ibuffer-filter-by-size-lt "size")
+    ("/" ibuffer-filter-disable "disable")
+    ("b" hydra-ibuffer-main/body "back" :color blue))
+
+  (define-key ibuffer-mode-map "." 'hydra-ibuffer-main/body)
+#+END_SRC
+
+*** pdf-tools
+#+BEGIN_SRC emacs-lisp
+  (defhydra hydra-pdftools (:color blue :hint nil)
+    "
+                                                                        ╭───────────┐
+         Move  History   Scale/Fit     Annotations  Search/Link    Do   │ PDF Tools │
+     ╭──────────────────────────────────────────────────────────────────┴───────────╯
+           ^^_g_^^      _B_    ^↧^    _+_    ^ ^     [_al_] list    [_s_] search    [_u_] revert buffer
+           ^^^↑^^^      ^↑^    _H_    ^↑^  ↦ _W_ ↤   [_am_] markup  [_o_] outline   [_i_] info
+           ^^_p_^^      ^ ^    ^↥^    _0_    ^ ^     [_at_] text    [_F_] link      [_d_] dark mode
+           ^^^↑^^^      ^↓^  ╭─^─^─┐  ^↓^  ╭─^ ^─┐   [_ad_] delete  [_f_] search link
+      _h_ ←pag_e_→ _l_  _N_  │ _P_ │  _-_    _b_     [_aa_] dired
+           ^^^↓^^^      ^ ^  ╰─^─^─╯  ^ ^  ╰─^ ^─╯   [_y_]  yank
+           ^^_n_^^      ^ ^  _r_eset slice box
+           ^^^↓^^^
+           ^^_G_^^
+     --------------------------------------------------------------------------------
+          "
+    ("\\" hydra-master/body "back")
+    ("<ESC>" nil "quit")
+    ("al" pdf-annot-list-annotations)
+    ("ad" pdf-annot-delete)
+    ("aa" pdf-annot-attachment-dired)
+    ("am" pdf-annot-add-markup-annotation)
+    ("at" pdf-annot-add-text-annotation)
+    ("y"  pdf-view-kill-ring-save)
+    ("+" pdf-view-enlarge :color red)
+    ("-" pdf-view-shrink :color red)
+    ("0" pdf-view-scale-reset)
+    ("H" pdf-view-fit-height-to-window)
+    ("W" pdf-view-fit-width-to-window)
+    ("P" pdf-view-fit-page-to-window)
+    ("n" pdf-view-next-page-command :color red)
+    ("p" pdf-view-previous-page-command :color red)
+    ("d" pdf-view-dark-minor-mode)
+    ("b" pdf-view-set-slice-from-bounding-box)
+    ("r" pdf-view-reset-slice)
+    ("g" pdf-view-first-page)
+    ("G" pdf-view-last-page)
+    ("e" pdf-view-goto-page)
+    ("o" pdf-outline)
+    ("s" pdf-occur)
+    ("i" pdf-misc-display-metadata)
+    ("u" pdf-view-revert-buffer)
+    ("F" pdf-links-action-perfom)
+    ("f" pdf-links-isearch-link)
+    ("B" pdf-history-backward :color red)
+    ("N" pdf-history-forward :color red)
+    ("l" image-forward-hscroll :color red)
+    ("h" image-backward-hscroll :color red))
+#+END_SRC
+
+** Custom keybindings
+#+BEGIN_SRC emacs-lisp
+  (define-prefix-command 'z-map)
+  (global-set-key (kbd "C-z") 'z-map)
+
+  (define-key z-map (kbd "c") 'hydra-multiple-cursors/body)
+  (define-key z-map (kbd "f") 'hydra-hs/body)
+  (define-key z-map (kbd "m") 'mu4e)
+  (define-key z-map (kbd "t") 'vterm)
+
+  (global-set-key (kbd "\e\e\w")
+                  (lambda () (interactive) (find-file "~/org/work.org")))
+  (global-set-key (kbd "\e\e\h")
+                  (lambda () (interactive) (find-file "~/org/home.org")))
+  (global-set-key (kbd "\e\ei")
+                  (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
+  (global-set-key (kbd "\e\ee")
+                  (lambda () (interactive) (find-file "~/.emacs.d/myinit.org")))
+#+END_SRC
+* org-mode
+** General
+#+BEGIN_SRC emacs-lisp
+  (use-package org)
+
+  (setenv "BROWSER" "firefox")
+
+  (use-package org-bullets
+    :commands org-bullets-mode
+    :hook (org-mode . org-bullets-mode))
+
+  ;; Not the ...
+  (setq org-ellipsis "⤵")
+  ;; Use syntax highlighting in source blocks while editing.
+  (setq org-src-fontify-natively t)
+  ;; Make TAB act as if it were issued in a buffer of the language’s major mode.
+  (setq org-src-tab-acts-natively t)
+  ;; When editing a code snippet, use the current window rather than
+  ;; popping open a new one (which shows the same information).
+  (setq org-src-window-setup 'current-window)
+
+  (custom-set-variables
+   '(org-directory "~/org")
+   '(org-startup-folded (quote overview))
+   '(org-startup-indented t)
+   )
+
+  ;; Don’t ask before evaluating code blocks.
+  (setq org-confirm-babel-evaluate nil)
+
+  ;;store org-mode links to messages
+  (require 'org-mu4e)
+  ;;store link to message if in header view, not to header query
+  (setq org-mu4e-link-query-in-headers-mode nil)
+
+  ;; open pdfs in pdf-tools
+  (use-package org-pdftools
+    :hook (org-load . org-pdftools-setup-link))
+
+  (add-to-list 'org-file-apps
+               '("\\.pdf\\'" . (lambda (file link)
+                                 (org-pdftools-open link))))
+#+END_SRC
+
+** Agenda
+#+BEGIN_SRC emacs-lisp
+  ;; org-agenda
+  (global-set-key "\C-ca" 'org-agenda)
+  (setq org-agenda-files (list "~/org/gcal.org"
+                               "~/org/home.org"
+                               "~/org/todo.org"))
+
+  ;; Begin weeks today, not on the last Monday.
+  (setq org-agenda-start-on-weekday nil)
+  ;;warn me of any deadlines in next 7 days
+  (setq org-deadline-warning-days 7)
+  ;;show me tasks scheduled or due in next fortnight
+  (setq org-agenda-span (quote fortnight))
+  ;;open agenda in current window
+  (setq org-agenda-window-setup (quote current-window))
+
+  ;; log changes and notes in drawer
+  (setq org-log-into-drawer t)
+#+END_SRC
+
+** Capture
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (setq org-capture-templates
+        '(
+          ("r" "Code Review" entry (file+headline "~/org/work.org" "Work")
+           "* TODO %? :CODE-REVIEW:MAIL:\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
+          ("m" "Meeting" entry (file+headline "~/org/work.org" "Meeting")
+           "* TODO %? :MEETING:MAIL:\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n%a\n")
+        ))
+#+END_SRC
+
+** Calendar
+#+BEGIN_SRC emacs-lisp
+
+  ;; sync gcal
+  ;; (setq package-check-signature nil)
+  ;; (use-package org-gcal
+  ;;   :config
+  ;;   (setq org-gcal-client-id "83999426487-a10vjlargv1iubb5s9aireut276klpq6.apps.googleusercontent.com"
+  ;; 	org-gcal-client-secret "q0-cqfjVn09bzd7f8j4xkkkKclient secret"
+  ;; 	org-gcal-file-alist '(("tkyiitd@gmail.com" .  "~/org/gcal.org"))))
+
+  ;; ;; sync whenever we load agenda
+  ;; (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
+
+#+END_SRC
+

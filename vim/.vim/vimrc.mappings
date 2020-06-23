@@ -1,0 +1,83 @@
+"--------------------------------------"
+"		Leader Mappings        "
+"--------------------------------------"
+
+" Leader mappings
+map <Leader>o :vertical resize +10<cr>
+
+"--------------------------------------"
+"		Insert Mappings        "
+"--------------------------------------"
+inoremap jf <esc>
+
+"--------------------------------------"
+"		Normal Mappings        "
+"--------------------------------------"
+nnoremap ; :
+nnoremap / /\v
+
+nnoremap J 10j
+nnoremap K 10k
+
+" Move between splits -> just use Ctrl + h/j/k/l
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l 
+" Tab and Ctrl-i is seen as same key by terminal
+" And Ctrl-i is used to navigate jumplist
+" Relying on Karabiner-Elements to avoid collision between <Tab> and
+" <C-i> (have it send F6 instead for <C-i>).
+nnoremap <F6> <C-i>
+" cycle through tabs
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+" show buffers list and put :b in command line
+"nnoremap <Leader>b :ls<CR>:b<Space>
+nnoremap <Leader>b :b <C-d>
+
+" replace word under cursor, press . to repeat(similar to multiple cursors)
+nnoremap <Leader>x /\<<C-R>=expand('<cword>')<CR>\>\C<CR>``cgn
+nnoremap <Leader>X ?\<<C-R>=expand('<cword>')<CR>\>\C<CR>``cgN
+
+" cd into current buffers' directory
+nnoremap <leader>cd :cd %:p:h<CR>
+
+" paste the last yanked text
+nnoremap yp "0p
+nnoremap yP "0P
+
+" copy current buffer to system clipboard
+vnoremap <leader>y "+y
+nnoremap <leader>Y ggVG"+y''
+
+" Paste from system clipboard
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+xnoremap <leader>p "+p
+xnoremap <leader>P "+P
+
+" gx downloads link instead of opening, workaround 
+if has('macunix')
+  nnoremap gx yiW:!open <cWORD><CR> <C-r>" & <CR><CR>
+else
+  nnoremap gx yiW:!xdg-open <cWORD><CR> <C-r>" & <CR><CR>
+endif
+
+"--------------------------------------"
+"		Visual Mappings        "
+"--------------------------------------"
+" Move between splits -> just use Ctrl + h/j/k/l
+xnoremap <C-h> <C-w>h
+xnoremap <C-j> <C-w>j
+xnoremap <C-k> <C-w>k
+xnoremap <C-l> <C-w>l 
+xnoremap ; :
+xnoremap / /\v
+" Indent visual selection without clearing selection
+xnoremap > >gv
+xnoremap < <gv
+
+" to compile and run cpp code(not using currently)
+" autocmd filetype cpp nnoremap <F4> :w <bar> exec '!g++ -std=c++11 '.shellescape('%').' -o '.shellescape('%:r').' && ./'.shellescape('%:r') ' < input.txt > output.txt '<CR>
+

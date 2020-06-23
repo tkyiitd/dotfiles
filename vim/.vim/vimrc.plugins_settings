@@ -1,0 +1,58 @@
+"--------------------------------------"
+"		Plugin Settings        "
+"--------------------------------------"
+
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+" undotree
+let g:undotree_WindowLayout = 2
+
+" ack
+cnoreabbrev Ack Ack!
+nnoremap <Leader>a :Ack!<Space>
+
+" rainbow
+let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+" vim-markdown
+let g:vim_markdown_folding_disabled = 1
+" Treat .md files as Markdown
+autocmd BufNewFile,BufRead *.md setlocal filetype=markdown
+
+" lightline
+set laststatus=2
+set showtabline=2
+let g:lightline                  = {}
+let g:lightline.tabline          = {'left': [['buffers']], 'right': [['close']]}
+let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
+let g:lightline.component_type   = {'buffers': 'tabsel'}
+" show filename and not path
+let g:lightline#bufferline#filename_modifier = ':t'
+let g:lightline#bufferline#show_number=1
+
+" allow ctrl p to index all files
+let g:ctrlp_max_files=0
+let g:ctrlp_custom_ignore = {
+  \ 'dir': 'build'
+  \ }
+" search only in current directory
+" let g:ctrlp_working_path_mode = 0
+" we need more results
+" let g:ctrlp_match_window = 'results:100' " overcome limit imposed by max height
+
+" snippets
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<C-b>"
+let g:UltiSnipsJumpForwardTrigger="<C-b>"
+let g:UltiSnipsJumpBackwardTrigger="<C-z>"
+
+" nerd tree settings
+nnoremap <Leader>c :NERDTreeToggle<CR>
+let g:NERDTreeWinSize=25
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" git gutter settings
+let g:gitgutter_max_signs=5000  " default value

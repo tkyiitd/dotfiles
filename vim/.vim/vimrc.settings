@@ -1,0 +1,101 @@
+"--------------------------------------"
+"		Settings               "
+"--------------------------------------"
+
+" put swapfiles in central location
+if !isdirectory($HOME."/.vim/swapfiles")
+    call mkdir($HOME."/.vim/swapfiles", "", 0700)
+endif
+set directory^=$HOME/.vim/swapfiles//
+
+" persistent undo
+if !isdirectory($HOME."/.vim/undodir")
+    call mkdir($HOME."/.vim/undodir", "", 0700)
+endif
+set undodir=~/.vim/undodir
+set undofile
+
+set number
+set nostartofline                   " Kept the cursor on the same column.
+if exists("&relativenumber")
+	set relativenumber
+	au BufReadPost * set relativenumber
+endif
+
+" use mouse 
+set mouse=n " allow only in normal mode
+
+" use system clipboard as default -- not using as of now
+"set clipboard=unnamed               " ┐
+                                    "" │ Use the system clipboard
+if has('unnamedplus')               " │ as the default register.
+    set clipboard+=unnamedplus      " │
+endif                               " ┘
+
+set lazyredraw                      " Do not redraw the screen while
+                                    " executing macros, registers
+                                    " and other commands that have
+                                    " not been typed.
+
+
+set encoding=utf-8 nobomb           " Use UTF-8 without BOM.
+set wrap
+" show invisible characters
+" Beautiful arrow key vs Indentation line
+"set lcs=tab:⟼\ ,trail:·,eol:⬎,nbsp:_
+set lcs=tab:\|\ ,trail:·,eol:⬎,nbsp:_
+set list
+
+" theme
+set background=dark
+"if (has("termguicolors"))
+  set termguicolors
+"endif
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+
+" I like these 3 themes
+"colorscheme spacemacs-theme
+"colorscheme hybrid 
+colorscheme papercolor
+
+set hidden      " allow me to have buffers with unsaved changes.
+set autoread    " when a file has changed on disk, just load it. Don't ask.
+set cursorline  " highlight the current line 
+set scrolloff=3 " start scrolling 3 lines before edge of viewport
+
+" search defaults
+set ignorecase  " case insensitive search
+set smartcase   " If there are uppercase letters, become case-sensitive.
+set incsearch   " live incremental searching
+set showmatch   " live match highlighting
+set hlsearch    " highlight matches
+
+set splitbelow                    " open horizontal splits below current window
+set splitright                    " open vertical splits to the right of current window
+
+"if has('virtualedit')
+    "set virtualedit=all             " Allow cursor to be anywhere.
+"endif
+
+if has('wildmenu')
+    set wildmenu                    " Enable enhanced command-line
+endif                               " completion (by hitting <TAB> in
+                                    " command mode, Vim will show the
+                                    " possible matches just above the
+                                    " command line with the first
+                                    " match highlighted).
+
+set visualbell                      " ┐
+set noerrorbells                    " │ Disable beeping and window flashing.
+set t_vb=                           " ┘ https://vim.wikia.com/wiki/Disable_beeping
+
+" autoload vimrc on save
+augroup myvimrc
+    au!
+    au BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC | if has('gui_running') | so $MYGVIMRC | endif
+augroup END
+
+" fold/unfold
+set foldmethod=syntax
+set foldlevel=3
