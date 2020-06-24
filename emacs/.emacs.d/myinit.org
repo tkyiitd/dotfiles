@@ -19,7 +19,10 @@
    inhibit-startup-screen t                         ; Disable start-up screen
    initial-buffer-choice "~/"
    )
-
+;; default-broswer
+(setq browse-url-browser-function 'browse-url-firefox)
+;; eww
+;; (setq browse-url-browser-function 'eww-browse-url) ; emacs browser
 (column-number-mode 1)                            ; Show the column number
 (display-time-mode 1)                             ; Enable time in the mode-line
 (setq vc-follow-symlinks t)                       ; always follow symlinks
@@ -246,6 +249,7 @@
     (delete-by-moving-to-trash t)
     (dired-listing-switches "-alh")
     )
+
   ;; toggle hidden files
   (defun dired-dotfiles-toggle ()
     "Show/hide dot-files"
@@ -373,6 +377,11 @@
 #+END_SRC
 
 * Buffers and Window
+** winner mode
+#+BEGIN_SRC emacs-lisp
+    (when (fboundp 'winner-mode)
+      (winner-mode 1))
+#+END_SRC
 ** ace-window
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
@@ -596,28 +605,28 @@
   ;; setup using https://gist.github.com/areina/3879626
   ;; or https://github.com/peterwvj/offlineimap-imapfilter-config
   ;; later found a better guide: https://notanumber.io/2016-10-03/better-email-with-mu4e/
-  ;; default
+  ;; mbsync: https://www.ict4g.net/adolfo/notes/emacs/reading-imap-mail-with-emacs.html
   (setq mu4e-maildir (expand-file-name "~/mail/tkyiitd"))
 
-  (setq mu4e-drafts-folder "/[Gmail].Drafts")
-  (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-  (setq mu4e-trash-folder  "/[Gmail].Trash")
-  (setq mu4e-refile-folder "/Archive")
+  (setq mu4e-drafts-folder "/[Gmail]/Drafts")
+  (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
+  (setq mu4e-trash-folder  "/[Gmail]/Bin")
+  ;;(setq mu4e-refile-folder "/archive")
 
   ;; don't save message to Sent Messages, GMail/IMAP will take care of this
   (setq mu4e-sent-messages-behavior 'delete)
 
   ;; setup some handy shortcuts
   (setq mu4e-maildir-shortcuts
-        '(("/INBOX"             . ?i)
-          ("/[Gmail].Sent Mail" . ?s)
-          ("/[Gmail].Trash"     . ?t)))
+        '(("/Inbox"             . ?i)
+          ("/[Gmail]/Sent Mail"              . ?s)
+          ("/[Gmail]/Bin"             . ?t)))
 
   (setq
    mail-user-agent 'mu4e-user-agent
    mu4e-update-mail-and-index t
    ;; allow for updating mail using 'U' in the main view:
-   mu4e-get-mail-command "offlineimap -q"
+   mu4e-get-mail-command "mbsync -a"
    ;; show images
    mu4e-show-images t
    mu4e-attachments-dir "~/Downloads"
@@ -645,6 +654,20 @@
   ;; Spell checking ftw.
   (add-hook 'mu4e-compose-mode-hook 'flyspell-mode)
 
+  ;; important: error in moving mails
+  (setq mu4e-change-filenames-when-moving t)
+  ;; Gmail: deleting a message moves it to All Mail and doesn't delete it
+  ;; solution: https://github.com/djcb/mu/issues/1136
+  (setf (alist-get 'trash mu4e-marks)
+        (list :char '("d" . "▼")
+              :prompt "dtrash"
+              :dyn-target (lambda (target msg)
+                            (mu4e-get-trash-folder msg))
+              :action (lambda (docid msg target)
+                        ;; Here's the main difference to the regular trash mark,
+                        ;; no +T before -N so the message is not marked as
+                        ;; IMAP-deleted:
+                        (mu4e~proc-move docid (mu4e~mark-check-target target) "-N"))))
   (require 'smtpmail)
 
   (setq message-send-mail-function 'smtpmail-send-it
@@ -987,6 +1010,8 @@ _SPC_ cancel
   (require 'org-mu4e)
   ;;store link to message if in header view, not to header query
   (setq org-mu4e-link-query-in-headers-mode nil)
+  ;; convert org mode to HTML automatically
+  (setq org-mu4e-convert-to-html t)
 
   ;; open pdfs in pdf-tools
   (use-package org-pdftools
