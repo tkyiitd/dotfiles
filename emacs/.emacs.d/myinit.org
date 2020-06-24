@@ -10,22 +10,22 @@
 
 ** Better Defaults
 #+BEGIN_SRC emacs-lisp
-  (setq-default
-   user-full-name "Tarun Kumar Yadav"
-   user-mail-address "tkyiitd@gmail.com"
-   fill-column 80                                   ; Set width for automatic line breaks
-   help-window-select t                             ; Focus new help windows when opened
-   load-prefer-newer t                              ; Prefers the newest version of a file
-   inhibit-startup-screen t                         ; Disable start-up screen
-   initial-buffer-choice "~/"
-   )
-;; default-broswer
-(setq browse-url-browser-function 'browse-url-firefox)
-;; eww
-;; (setq browse-url-browser-function 'eww-browse-url) ; emacs browser
-(column-number-mode 1)                            ; Show the column number
-(display-time-mode 1)                             ; Enable time in the mode-line
-(setq vc-follow-symlinks t)                       ; always follow symlinks
+    (setq-default
+     user-full-name "Tarun Kumar Yadav"
+     user-mail-address "tkyiitd@gmail.com"
+     fill-column 80                                   ; Set width for automatic line breaks
+     help-window-select t                             ; Focus new help windows when opened
+     load-prefer-newer t                              ; Prefers the newest version of a file
+     inhibit-startup-screen t                         ; Disable start-up screen
+     initial-buffer-choice "~/"
+     )
+  ;; default-broswer
+  ;; (setq browse-url-browser-function 'browse-url-chromium)
+  ;; eww
+  ;; (setq browse-url-browser-function 'eww-browse-url) ; emacs browser
+  (column-number-mode 1)                            ; Show the column number
+  (display-time-mode 1)                             ; Enable time in the mode-line
+  (setq vc-follow-symlinks t)                       ; always follow symlinks
 #+END_SRC
 ** Authentication
 #+BEGIN_SRC emacs-lisp
@@ -625,6 +625,7 @@
   (setq
    mail-user-agent 'mu4e-user-agent
    mu4e-update-mail-and-index t
+   mu4e-compose-dont-reply-to-self t
    ;; allow for updating mail using 'U' in the main view:
    mu4e-get-mail-command "mbsync -a"
    ;; show images
@@ -636,8 +637,18 @@
    mu4e-confirm-quit nil
    ;; Display the sender’s email address along with their name.
    mu4e-view-show-addresses t
-   mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
-   )
+   ;; prefer html over text emails
+   mu4e-view-prefer-html t
+   ;; mu4e-html2text-command "w3m -dump -T text/html"
+)
+;; use tab to navigate links
+(add-hook 'mu4e-view-mode-hook
+  (lambda()
+    ;; try to emulate some of the eww key-bindings
+    (local-set-key (kbd "<tab>") 'shr-next-link)
+    (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+;; convert messages look bad on dark theme
+(setq shr-color-visible-luminance-min 80)
   ;; Hit C-c C-o to open a URL in the browser.
   (define-key mu4e-view-mode-map (kbd "C-c C-o") 'mu4e~view-browse-url-from-binding)
 
