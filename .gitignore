@@ -1,2 +1,2 @@
-secret/.authinfo
-secret/.authinfo.gpg
+mail/.authinfo.gpg
+secret/org_gcal.el

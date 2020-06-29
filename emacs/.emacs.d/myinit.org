@@ -20,9 +20,6 @@
      initial-buffer-choice "~/"
      )
   ;; default-broswer
-  ;; (setq browse-url-browser-function 'browse-url-chromium)
-  ;; eww
-  ;; (setq browse-url-browser-function 'eww-browse-url) ; emacs browser
   (column-number-mode 1)                            ; Show the column number
   (display-time-mode 1)                             ; Enable time in the mode-line
   (setq vc-follow-symlinks t)                       ; always follow symlinks
@@ -48,7 +45,8 @@
   ;; (set-default-font "Source Code Pro Light-16")
   ;; (set-default-font "Fira Code Medium-16")
   (set-default-font "IBM Plex Mono Medium-16")
-  ;; (set-default-font "Hack Regular-16")
+  ;; (set-default-font "Roboto Mono Medium 16")
+  ;; (set-default-font "Hack Regular 16")
   ;; Ask "y" or "n" instead of "yes" or "no"
   (fset 'yes-or-no-p 'y-or-n-p)
   ;; Highlight tabulations
@@ -66,6 +64,7 @@
                           'Buffer-menu-mode
                           'mu4e-view-mode
                           'mu4e-headers-mode
+                          'eww-mode
                           ;;'some-other-mode
                           )
       (setq show-trailing-whitespace nil)))
@@ -110,18 +109,18 @@
 
 ** Theme
 #+BEGIN_SRC emacs-lisp
-    ;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-  (use-package doom-themes
-    :config
-     ;;(load-theme 'doom-gruvbox t)
-     (load-theme 'doom-nord t)
-  )
+      ;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+    (use-package doom-themes
+      :config
+       ;; (load-theme 'doom-gruvbox t)
+       (load-theme 'doom-nord t)
+    )
 
-(use-package solaire-mode
-  :custom (solaire-mode-remap-fringe t)
-  :config
-  (solaire-mode-swap-bg)
-  (solaire-global-mode +1))
+  (use-package solaire-mode
+    :custom (solaire-mode-remap-fringe t)
+    :config
+    (solaire-mode-swap-bg)
+    (solaire-global-mode +1))
 #+END_SRC
 
 ** Modeline
@@ -209,6 +208,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package avy)
   (global-set-key (kbd "C-:") 'avy-goto-char)
+  (global-set-key (kbd "C-'") 'avy-goto-char-2)
   (global-set-key (kbd "M-g f") 'avy-goto-line)
 #+END_SRC
 ** undo-tree
@@ -291,19 +291,23 @@
 #+BEGIN_SRC emacs-lisp
   (use-package helm
     :config
-            (require 'helm-config)
-            (helm-mode 1)
-            (helm-autoresize-mode 1)
-            (bind-key "M-x" #'helm-M-x)
-            (bind-key "C-x r b" #'helm-filtered-bookmarks)
-            (bind-key "C-x C-f" #'helm-find-files)
-            (setq helm-M-x-fuzzy-match t)
-            (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-            (global-set-key (kbd "C-h SPC") 'helm-all-mark-rings)
+    (require 'helm-config)
+    (helm-mode 1)
+    (helm-autoresize-mode 1)
+    (bind-key "M-x" #'helm-M-x)
+    ;; helm mini
+    (global-set-key (kbd "C-x b") 'helm-mini)
+    (setq helm-buffers-fuzzy-matching t
+          helm-recentf-fuzzy-match    t)
+    (bind-key "C-x r b" #'helm-filtered-bookmarks)
+    (bind-key "C-x C-f" #'helm-find-files)
+    (setq helm-M-x-fuzzy-match t)
+    (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+    (global-set-key (kbd "C-h SPC") 'helm-all-mark-rings)
     )
 
-  (use-package helm-ag
-  )
+   (use-package helm-ag
+   )
 #+END_SRC
 
 ** helm-swoop
@@ -548,6 +552,10 @@
 #+END_SRC
 
 * Miscellaneous
+** try
+#+BEGIN_SRC emacs-lisp
+(use-package try)
+#+END_SRC
 ** multiple-cursors
 #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors)
@@ -623,6 +631,7 @@
           ("/[Gmail]/Bin"             . ?t)))
 
   (setq
+   mu4e-use-fancy-chars t
    mail-user-agent 'mu4e-user-agent
    mu4e-update-mail-and-index t
    mu4e-compose-dont-reply-to-self t
@@ -695,6 +704,22 @@
 
 #+END_SRC
 
+** eww
+#+BEGIN_SRC emacs-lisp
+  (use-package eww
+    :init
+    ;; (setq browse-url-browser-function 'eww-browse-url)
+    (add-hook 'eww-mode-hook #'toggle-word-wrap)
+    (add-hook 'eww-mode-hook #'visual-line-mode))
+  ;; press 'o' to select-links
+  (use-package ace-link
+    :config
+    (ace-link-setup-default)
+    )
+  (use-package helm-eww)
+  (setq eww-search-prefix "https://www.startpage.com/do/dsearch?query=")
+  (setq eww-download-directory "~/Downloads")
+#+END_SRC
 * Keybindings
 ** key-chord
 #+BEGIN_SRC emacs-lisp
@@ -1039,7 +1064,7 @@ _SPC_ cancel
   (global-set-key "\C-ca" 'org-agenda)
   (setq org-agenda-files (list "~/org/gcal.org"
                                "~/org/home.org"
-                               "~/org/todo.org"))
+                               "~/org/work.org"))
 
   ;; Begin weeks today, not on the last Monday.
   (setq org-agenda-start-on-weekday nil)
@@ -1068,17 +1093,19 @@ _SPC_ cancel
 
 ** Calendar
 #+BEGIN_SRC emacs-lisp
+  (defun load-if-exists (f)
+    "load the elisp file only if it exists and is readable"
+    (if (file-readable-p f)
+        (load-file f)))
 
   ;; sync gcal
-  ;; (setq package-check-signature nil)
-  ;; (use-package org-gcal
-  ;;   :config
-  ;;   (setq org-gcal-client-id "83999426487-a10vjlargv1iubb5s9aireut276klpq6.apps.googleusercontent.com"
-  ;; 	org-gcal-client-secret "q0-cqfjVn09bzd7f8j4xkkkKclient secret"
-  ;; 	org-gcal-file-alist '(("tkyiitd@gmail.com" .  "~/org/gcal.org"))))
-
-  ;; ;; sync whenever we load agenda
-  ;; (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
-
+  (setq package-check-signature nil)
+  (use-package org-gcal
+    :after org
+    :config
+    (load-if-exists "~/dotfiles/secret/org_gcal.el")
+    )
+  ;; sync whenever we load agenda
+  (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
 #+END_SRC
 
