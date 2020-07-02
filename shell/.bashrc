@@ -1,18 +1,8 @@
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 alias v='mvim -v'
 alias vim='mvim -v'
-alias compiler='ssh 10.237.23.93'
-alias sri='ssh cs1160359@sri.cse.iitd.ac.in'
-alias home="ssh -J cs1160359@sri.cse.iitd.ac.in tarun@10.237.23.93"
-alias zen="ssh -J cs1160359@sri.cse.iitd.ac.in tarun@zen.cse.iitd.ac.in"
-alias bigbox="ssh -J cs1160359@sri.cse.iitd.ac.in tarun@bigbox1.cse.iitd.ac.in"
-alias glados="ssh -J cs1160359@sri.cse.iitd.ac.in cs1160359@glados.cse.iitd.ac.in"
 
-### VIM NOTES ###
-alias note="vim $HOME/Desktop/notes/Philosophy/Thoughts/$(date +'%Y%m%d').md"
-alias todo="vim $HOME/Desktop/notes/Todo/ToDo.md"
-alias tobuy="vim $HOME/Desktop/notes/Todo/ToBuy.md"
-
+export GPG_TTY=$(tty)
 # --- set gcc as primary compiler --- #
 #export CC=/usr/local/bin/gcc-9
 #export CXX=/usr/local/bin/g++-9

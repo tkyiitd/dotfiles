@@ -44,9 +44,10 @@
   ;; Set font
   ;; (set-default-font "Source Code Pro Light-16")
   ;; (set-default-font "Fira Code Medium-16")
-  (set-default-font "IBM Plex Mono Medium-16")
+  ;; (set-default-font "IBM Plex Mono Medium-16")
+  (set-default-font "Inconsolata-18")
   ;; (set-default-font "Roboto Mono Medium 16")
-  ;; (set-default-font "Hack Regular 16")
+  ;; (set-default-font "Hack-16")
   ;; Ask "y" or "n" instead of "yes" or "no"
   (fset 'yes-or-no-p 'y-or-n-p)
   ;; Highlight tabulations
@@ -65,6 +66,7 @@
                           'mu4e-view-mode
                           'mu4e-headers-mode
                           'eww-mode
+                          'eshell-mode 
                           ;;'some-other-mode
                           )
       (setq show-trailing-whitespace nil)))
@@ -607,57 +609,65 @@
 
 ** Mail
 #+BEGIN_SRC emacs-lisp
-  (use-package mu4e
-    :load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+    (use-package mu4e
+      :load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
 
-  ;; setup using https://gist.github.com/areina/3879626
-  ;; or https://github.com/peterwvj/offlineimap-imapfilter-config
-  ;; later found a better guide: https://notanumber.io/2016-10-03/better-email-with-mu4e/
-  ;; mbsync: https://www.ict4g.net/adolfo/notes/emacs/reading-imap-mail-with-emacs.html
-  (setq mu4e-maildir (expand-file-name "~/mail/tkyiitd"))
+    ;; setup using https://gist.github.com/areina/3879626
+    ;; or https://github.com/peterwvj/offlineimap-imapfilter-config
+    ;; later found a better guide: https://notanumber.io/2016-10-03/better-email-with-mu4e/
+    ;; mbsync: https://www.ict4g.net/adolfo/notes/emacs/reading-imap-mail-with-emacs.html
+    (setq mu4e-maildir (expand-file-name "~/mail/tkyiitd"))
 
-  (setq mu4e-drafts-folder "/[Gmail]/Drafts")
-  (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
-  (setq mu4e-trash-folder  "/[Gmail]/Bin")
-  ;;(setq mu4e-refile-folder "/archive")
+    (setq mu4e-drafts-folder "/[Gmail]/Drafts")
+    (setq mu4e-sent-folder   "/[Gmail]/Sent Mail")
+    (setq mu4e-trash-folder  "/[Gmail]/Bin")
+    ;;(setq mu4e-refile-folder "/archive")
 
-  ;; don't save message to Sent Messages, GMail/IMAP will take care of this
-  (setq mu4e-sent-messages-behavior 'delete)
+    ;; don't save message to Sent Messages, GMail/IMAP will take care of this
+    (setq mu4e-sent-messages-behavior 'delete)
 
-  ;; setup some handy shortcuts
-  (setq mu4e-maildir-shortcuts
-        '(("/Inbox"             . ?i)
-          ("/[Gmail]/Sent Mail"              . ?s)
-          ("/[Gmail]/Bin"             . ?t)))
+    ;; setup some handy shortcuts
+    (setq mu4e-maildir-shortcuts
+          '(("/Inbox"             . ?i)
+            ("/[Gmail]/Sent Mail"              . ?s)
+            ("/[Gmail]/Bin"             . ?t)))
 
-  (setq
-   mu4e-use-fancy-chars t
-   mail-user-agent 'mu4e-user-agent
-   mu4e-update-mail-and-index t
-   mu4e-compose-dont-reply-to-self t
-   ;; allow for updating mail using 'U' in the main view:
-   mu4e-get-mail-command "mbsync -a"
-   ;; show images
-   mu4e-show-images t
-   mu4e-attachments-dir "~/Downloads"
-   ;; This enabled the thread like viewing of email similar to gmail's UI.
-   mu4e-headers-include-related t
-   message-kill-buffer-on-exit t
-   mu4e-confirm-quit nil
-   ;; Display the sender’s email address along with their name.
-   mu4e-view-show-addresses t
-   ;; prefer html over text emails
-   mu4e-view-prefer-html t
-   ;; mu4e-html2text-command "w3m -dump -T text/html"
-)
-;; use tab to navigate links
-(add-hook 'mu4e-view-mode-hook
-  (lambda()
-    ;; try to emulate some of the eww key-bindings
-    (local-set-key (kbd "<tab>") 'shr-next-link)
-    (local-set-key (kbd "<backtab>") 'shr-previous-link)))
-;; convert messages look bad on dark theme
-(setq shr-color-visible-luminance-min 80)
+    (setq
+     ;; mu4e-use-fancy-chars t
+     mail-user-agent 'mu4e-user-agent
+     mu4e-update-mail-and-index t
+     mu4e-compose-dont-reply-to-self t
+     ;; allow for updating mail using 'U' in the main view:
+     mu4e-get-mail-command "mbsync -a"
+     mu4e-update-interval 1800
+     ;; show images
+     mu4e-show-images t
+     mu4e-attachments-dir "~/Downloads"
+     ;; This enabled the thread like viewing of email similar to gmail's UI.
+     mu4e-headers-include-related t
+     message-kill-buffer-on-exit t
+     mu4e-confirm-quit nil
+     ;; Display the sender’s email address along with their name.
+     mu4e-view-show-addresses t
+     mu4e-headers-date-format "%y-%m-%d %H:%M"
+     ;; prefer html over text emails
+     mu4e-view-prefer-html t
+     ;; mu4e-html2text-command "w3m -dump -T text/html"
+  )
+  ;; use tab to navigate links
+  (add-hook 'mu4e-view-mode-hook
+    (lambda()
+      ;; try to emulate some of the eww key-bindings
+      (local-set-key (kbd "<tab>") 'shr-next-link)
+      (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+
+  ;; customize-header-view
+  (setq mu4e-headers-fields '((:flags         . 5)
+                              (:human-date    . 20)
+                              (:from-or-to    . 25)
+                              (:subject       . nil)))
+  ;; convert messages look bad on dark theme
+  (setq shr-color-visible-luminance-min 80)
   ;; Hit C-c C-o to open a URL in the browser.
   (define-key mu4e-view-mode-map (kbd "C-c C-o") 'mu4e~view-browse-url-from-binding)
 
@@ -700,8 +710,6 @@
         smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 587
         smtpmail-debug-info t)
-
-
 #+END_SRC
 
 ** eww
@@ -1107,5 +1115,9 @@ _SPC_ cancel
     )
   ;; sync whenever we load agenda
   (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
+  (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync) ))
 #+END_SRC
+
+#+RESULTS:
+| lambda | nil | (org-gcal-sync) |
 

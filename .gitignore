@@ -1,2 +1,6 @@
 mail/.authinfo.gpg
 secret/org_gcal.el
+vim/.vim/plugged
+vim/.vim/swapfiles
+vim/.vim/undodir
+vim/.vim/autoload
