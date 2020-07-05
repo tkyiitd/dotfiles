@@ -79,3 +79,4 @@ vterm_prompt_end() {
 }
 setopt PROMPT_SUBST
 PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
+export PATH="/usr/local/opt/llvm/bin:$PATH"

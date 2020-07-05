@@ -111,24 +111,27 @@
 
 ** Theme
 #+BEGIN_SRC emacs-lisp
-      ;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-    (use-package doom-themes
-      :config
-       ;; (load-theme 'doom-gruvbox t)
-       (load-theme 'doom-nord t)
-    )
-
-  (use-package solaire-mode
-    :custom (solaire-mode-remap-fringe t)
+  ;; disable safe-theme warning
+  (setq custom-safe-themes t)
+  ;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (use-package doom-themes
     :config
-    (solaire-mode-swap-bg)
-    (solaire-global-mode +1))
+    ;; (load-theme 'doom-gruvbox t)
+    ;; (load-theme 'doom-nord t)
+    )
+  (load-theme 'sanityinc-solarized-dark)
+
+  ;; (use-package solaire-mode
+  ;;   :custom (solaire-mode-remap-fringe t)
+  ;;   :config
+  ;;   (solaire-mode-swap-bg)
+  ;;   (solaire-global-mode +1))
 #+END_SRC
 
 ** Modeline
 #+BEGIN_SRC emacs-lisp
-(use-package doom-modeline
-  :config (doom-modeline-mode))
+  (use-package doom-modeline
+	:config (doom-modeline-mode))
 #+END_SRC
 
 ** Indentation
@@ -524,21 +527,21 @@
 
 ** vterm
 #+BEGIN_SRC emacs-lisp
-;; need to compile emacs-libvterm on mac
-;; somehow does not seem to detect cmake
-;; https://github.com/akermu/emacs-libvterm
-(use-package vterm
- ;;    :load-path  "/Users/tarun/emacs-libvterm/")
-)
-;; https://github.com/jixiuf/vterm-toggle
-;; toggle between edit buffer and vterm buffer
-(use-package vterm-toggle)
-(global-set-key [f2] 'vterm-toggle)
-(global-set-key [C-f2] 'vterm-toggle-cd)
+  ;; need to compile emacs-libvterm on mac
+  ;; somehow does not seem to detect cmake
+  ;; https://github.com/akermu/emacs-libvterm
+  (use-package vterm
+	;;    :load-path  "/Users/tarun/emacs-libvterm/")
+	)
+  ;; https://github.com/jixiuf/vterm-toggle
+  ;; toggle between edit buffer and vterm buffer
+  (use-package vterm-toggle)
+  (global-set-key [f2] 'vterm-toggle)
+  (global-set-key [C-f2] 'vterm-toggle-cd)
 
-;; you can cd to the directory where your previous buffer file exists
-;; after you have toggle to the vterm buffer with `vterm-toggle'.
-(define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
+  ;; you can cd to the directory where your previous buffer file exists
+  ;; after you have toggle to the vterm buffer with `vterm-toggle'.
+  (define-key vterm-mode-map [(control return)]   #'vterm-toggle-insert-cd)
 #+END_SRC
 
 ** git
@@ -577,34 +580,34 @@
 
 ** pdf, epub
 #+BEGIN_SRC emacs-lisp
-;; read pdf
-(use-package pdf-tools
-    :config
-    (setq-default pdf-view-display-size 'fit-page)
-    (bind-keys :map pdf-view-mode-map
-               ("\\" . hydra-pdftools/body)
-               ("<s-spc>" .  pdf-view-scroll-down-or-next-page)
-               ("g"  . pdf-view-first-page)
-               ("G"  . pdf-view-last-page)
-               ("l"  . image-forward-hscroll)
-               ("h"  . image-backward-hscroll)
-               ("j"  . pdf-view-next-page)
-               ("k"  . pdf-view-previous-page)
-               ("e"  . pdf-view-goto-page)
-               ("u"  . pdf-view-revert-buffer)
-               ("al" . pdf-annot-list-annotations)
-               ("ad" . pdf-annot-delete)
-               ("aa" . pdf-annot-attachment-dired)
-               ("am" . pdf-annot-add-markup-annotation)
-               ("at" . pdf-annot-add-text-annotation)
-               ("y"  . pdf-view-kill-ring-save)
-               ("i"  . pdf-misc-display-metadata)
-               ("s"  . pdf-occur)
-               ("b"  . pdf-view-set-slice-from-bounding-box)
-               ("r"  . pdf-view-reset-slice)))
-  ;; read epub
-  (use-package nov)
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  ;; read pdf
+  (use-package pdf-tools
+      :config
+      (setq-default pdf-view-display-size 'fit-page)
+      (bind-keys :map pdf-view-mode-map
+                 ;; ("\\" . hydra-pdftools/body)
+                 ("<s-spc>" .  pdf-view-scroll-down-or-next-page)
+                 ("g"  . pdf-view-first-page)
+                 ("G"  . pdf-view-last-page)
+                 ("l"  . image-forward-hscroll)
+                 ("h"  . image-backward-hscroll)
+                 ("j"  . pdf-view-next-page)
+                 ("k"  . pdf-view-previous-page)
+                 ("e"  . pdf-view-goto-page)
+                 ("u"  . pdf-view-revert-buffer)
+                 ("al" . pdf-annot-list-annotations)
+                 ("ad" . pdf-annot-delete)
+                 ("aa" . pdf-annot-attachment-dired)
+                 ("am" . pdf-annot-add-markup-annotation)
+                 ("at" . pdf-annot-add-text-annotation)
+                 ("y"  . pdf-view-kill-ring-save)
+                 ("i"  . pdf-misc-display-metadata)
+                 ("s"  . pdf-occur)
+                 ("b"  . pdf-view-set-slice-from-bounding-box)
+                 ("r"  . pdf-view-reset-slice)))
+    ;; read epub
+    (use-package nov)
+    (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 #+END_SRC
 
 ** Mail
@@ -670,6 +673,21 @@
   (setq shr-color-visible-luminance-min 80)
   ;; Hit C-c C-o to open a URL in the browser.
   (define-key mu4e-view-mode-map (kbd "C-c C-o") 'mu4e~view-browse-url-from-binding)
+
+  ;; mail notifications
+  (use-package mu4e-alert
+    :after mu4e
+    :hook ((after-init . mu4e-alert-enable-mode-line-display)
+           (after-init . mu4e-alert-enable-notifications))
+    :config (mu4e-alert-set-default-style 'libnotify))
+
+  ;; (mu4e-alert-set-default-style 'libnotify)
+  ;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+  ;; (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+  ;; (setq doom-modeline-mu4e t)
+
+  ;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+  ;; (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
 
   ;; use imagemagick, if available
   (when (fboundp 'imagemagick-register-types)
@@ -746,22 +764,22 @@
 *** Movement
 #+BEGIN_SRC emacs-lisp
   ;; don't hold control key for movement
-  (global-set-key (kbd "C-n")
-                  (defhydra hydra-move
-                    (:body-pre (next-line))
-                    "move"
-                    ("n" next-line)
-                    ("p" previous-line)
-                    ("f" forward-char)
-                    ("b" backward-char)
-                    ("a" beginning-of-line)
-                    ("e" move-end-of-line)
-                    ;;("v" scroll-up-command)
-                    ("v" View-scroll-half-page-forward)
-                    ;; Converting M-v to V here by analogy.
-                    ;;("V" scroll-down-command)
-                    ("V" View-scroll-half-page-backward)
-                    ("l" recenter-top-bottom)))
+  ;; (global-set-key (kbd "C-n")
+  ;;                 (defhydra hydra-move
+  ;;                   (:body-pre (next-line))
+  ;;                   "move"
+  ;;                   ("n" next-line)
+  ;;                   ("p" previous-line)
+  ;;                   ("f" forward-char)
+  ;;                   ("b" backward-char)
+  ;;                   ("a" beginning-of-line)
+  ;;                   ("e" move-end-of-line)
+  ;;                   ;;("v" scroll-up-command)
+  ;;                   ("v" View-scroll-half-page-forward)
+  ;;                   ;; Converting M-v to V here by analogy.
+  ;;                   ;;("V" scroll-down-command)
+  ;;                   ("V" View-scroll-half-page-backward)
+  ;;                   ("l" recenter-top-bottom)))
 #+END_SRC
 
 *** multiple-cursors
@@ -794,43 +812,43 @@
 
 *** hide-show
 #+BEGIN_SRC emacs-lisp
-(defhydra hydra-hs (:body-pre (hs-minor-mode))
-   "
-Hide^^            ^Show^            ^Toggle^    ^Navigation^
-----------------------------------------------------------------
-_h_ hide all      _s_ show all      _t_oggle    _n_ext line
-_d_ hide block    _a_ show block              _p_revious line
-_l_ hide level
+  ;; (defhydra hydra-hs (:body-pre (hs-minor-mode))
+  ;;    "
+  ;; Hide^^            ^Show^            ^Toggle^    ^Navigation^
+  ;; ----------------------------------------------------------------
+  ;; _h_ hide all      _s_ show all      _t_oggle    _n_ext line
+  ;; _d_ hide block    _a_ show block              _p_revious line
+  ;; _l_ hide level
 
-_SPC_ cancel
-"
-   ("s" hs-show-all)
-   ("h" hs-hide-all)
-   ("a" hs-show-block)
-   ("d" hs-hide-block)
-   ("t" hs-toggle-hiding)
-   ("l" hs-hide-level)
-   ("n" forward-line)
-   ("p" (forward-line -1))
-   ("SPC" nil)
-)
+  ;; _SPC_ cancel
+  ;; "
+  ;;    ("s" hs-show-all)
+  ;;    ("h" hs-hide-all)
+  ;;    ("a" hs-show-block)
+  ;;    ("d" hs-hide-block)
+  ;;    ("t" hs-toggle-hiding)
+  ;;    ("l" hs-hide-level)
+  ;;    ("n" forward-line)
+  ;;    ("p" (forward-line -1))
+  ;;    ("SPC" nil)
+  ;; )
 #+END_SRC
 
 *** Transpose
 #+BEGIN_SRC emacs-lisp
-  ;; collection of transpose
-  (global-set-key (kbd "C-c m")
-                  (defhydra hydra-transpose (:color red)
-                    "Transpose"
-                    ("c" transpose-chars "characters")
-                    ("w" transpose-words "words")
-                    ("o" org-transpose-words "Org mode words")
-                    ("l" transpose-lines "lines")
-                    ("s" transpose-sentences "sentences")
-                    ("e" org-transpose-elements "Org mode elements")
-                    ("p" transpose-paragraphs "paragraphs")
-                    ("t" org-table-transpose-table-at-point "Org mode table")
-                    ("q" nil "cancel" :color blue)))
+  ;; ;; collection of transpose
+  ;; (global-set-key (kbd "C-c m")
+  ;;                 (defhydra hydra-transpose (:color red)
+  ;;                   "Transpose"
+  ;;                   ("c" transpose-chars "characters")
+  ;;                   ("w" transpose-words "words")
+  ;;                   ("o" org-transpose-words "Org mode words")
+  ;;                   ("l" transpose-lines "lines")
+  ;;                   ("s" transpose-sentences "sentences")
+  ;;                   ("e" org-transpose-elements "Org mode elements")
+  ;;                   ("p" transpose-paragraphs "paragraphs")
+  ;;                   ("t" org-table-transpose-table-at-point "Org mode table")
+  ;;                   ("q" nil "cancel" :color blue)))
 #+END_SRC
 
 *** Compilation
@@ -856,149 +874,149 @@ _SPC_ cancel
 
 *** Ibuffer
 #+BEGIN_SRC emacs-lisp
-  (defhydra hydra-ibuffer-main (:color pink :hint nil)
-    "
-   ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
-  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-    _k_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
-   _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
-    _j_:    v   | _*_: specific | _a_: all actions | _/_: filter
-  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-  "
-    ("j" ibuffer-forward-line)
-    ("RET" ibuffer-visit-buffer :color blue)
-    ("k" ibuffer-backward-line)
+  ;; (defhydra hydra-ibuffer-main (:color pink :hint nil)
+  ;;   "
+  ;;  ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
+  ;; -^----------^-+-^----^--------+-^-------^--------+-^----^-------
+  ;;   _k_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
+  ;;  _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
+  ;;   _j_:    v   | _*_: specific | _a_: all actions | _/_: filter
+  ;; -^----------^-+-^----^--------+-^-------^--------+-^----^-------
+  ;; "
+  ;;   ("j" ibuffer-forward-line)
+  ;;   ("RET" ibuffer-visit-buffer :color blue)
+  ;;   ("k" ibuffer-backward-line)
 
-    ("m" ibuffer-mark-forward)
-    ("u" ibuffer-unmark-forward)
-    ("*" hydra-ibuffer-mark/body :color blue)
+  ;;   ("m" ibuffer-mark-forward)
+  ;;   ("u" ibuffer-unmark-forward)
+  ;;   ("*" hydra-ibuffer-mark/body :color blue)
 
-    ("D" ibuffer-do-delete)
-    ("S" ibuffer-do-save)
-    ("a" hydra-ibuffer-action/body :color blue)
+  ;;   ("D" ibuffer-do-delete)
+  ;;   ("S" ibuffer-do-save)
+  ;;   ("a" hydra-ibuffer-action/body :color blue)
 
-    ("g" ibuffer-update)
-    ("s" hydra-ibuffer-sort/body :color blue)
-    ("/" hydra-ibuffer-filter/body :color blue)
+  ;;   ("g" ibuffer-update)
+  ;;   ("s" hydra-ibuffer-sort/body :color blue)
+  ;;   ("/" hydra-ibuffer-filter/body :color blue)
 
-    ("o" ibuffer-visit-buffer-other-window "other window" :color blue)
-    ("q" quit-window "quit ibuffer" :color blue)
-    ("." nil "toggle hydra" :color blue))
+  ;;   ("o" ibuffer-visit-buffer-other-window "other window" :color blue)
+  ;;   ("q" quit-window "quit ibuffer" :color blue)
+  ;;   ("." nil "toggle hydra" :color blue))
 
-  (defhydra hydra-ibuffer-mark (:color teal :columns 5
-                                       :after-exit (hydra-ibuffer-main/body))
-    "Mark"
-    ("*" ibuffer-unmark-all "unmark all")
-    ("M" ibuffer-mark-by-mode "mode")
-    ("m" ibuffer-mark-modified-buffers "modified")
-    ("u" ibuffer-mark-unsaved-buffers "unsaved")
-    ("s" ibuffer-mark-special-buffers "special")
-    ("r" ibuffer-mark-read-only-buffers "read-only")
-    ("/" ibuffer-mark-dired-buffers "dired")
-    ("e" ibuffer-mark-dissociated-buffers "dissociated")
-    ("h" ibuffer-mark-help-buffers "help")
-    ("z" ibuffer-mark-compressed-file-buffers "compressed")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
+  ;; (defhydra hydra-ibuffer-mark (:color teal :columns 5
+  ;;                                      :after-exit (hydra-ibuffer-main/body))
+  ;;   "Mark"
+  ;;   ("*" ibuffer-unmark-all "unmark all")
+  ;;   ("M" ibuffer-mark-by-mode "mode")
+  ;;   ("m" ibuffer-mark-modified-buffers "modified")
+  ;;   ("u" ibuffer-mark-unsaved-buffers "unsaved")
+  ;;   ("s" ibuffer-mark-special-buffers "special")
+  ;;   ("r" ibuffer-mark-read-only-buffers "read-only")
+  ;;   ("/" ibuffer-mark-dired-buffers "dired")
+  ;;   ("e" ibuffer-mark-dissociated-buffers "dissociated")
+  ;;   ("h" ibuffer-mark-help-buffers "help")
+  ;;   ("z" ibuffer-mark-compressed-file-buffers "compressed")
+  ;;   ("b" hydra-ibuffer-main/body "back" :color blue))
 
-  (defhydra hydra-ibuffer-action (:color teal :columns 4
-                                         :after-exit
-                                         (if (eq major-mode 'ibuffer-mode)
-                                             (hydra-ibuffer-main/body)))
-    "Action"
-    ("A" ibuffer-do-view "view")
-    ("E" ibuffer-do-eval "eval")
-    ("F" ibuffer-do-shell-command-file "shell-command-file")
-    ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
-    ("H" ibuffer-do-view-other-frame "view-other-frame")
-    ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
-    ("M" ibuffer-do-toggle-modified "toggle-modified")
-    ("O" ibuffer-do-occur "occur")
-    ("P" ibuffer-do-print "print")
-    ("Q" ibuffer-do-query-replace "query-replace")
-    ("R" ibuffer-do-rename-uniquely "rename-uniquely")
-    ("T" ibuffer-do-toggle-read-only "toggle-read-only")
-    ("U" ibuffer-do-replace-regexp "replace-regexp")
-    ("V" ibuffer-do-revert "revert")
-    ("W" ibuffer-do-view-and-eval "view-and-eval")
-    ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
-    ("b" nil "back"))
+  ;; (defhydra hydra-ibuffer-action (:color teal :columns 4
+  ;;                                        :after-exit
+  ;;                                        (if (eq major-mode 'ibuffer-mode)
+  ;;                                            (hydra-ibuffer-main/body)))
+  ;;   "Action"
+  ;;   ("A" ibuffer-do-view "view")
+  ;;   ("E" ibuffer-do-eval "eval")
+  ;;   ("F" ibuffer-do-shell-command-file "shell-command-file")
+  ;;   ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
+  ;;   ("H" ibuffer-do-view-other-frame "view-other-frame")
+  ;;   ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
+  ;;   ("M" ibuffer-do-toggle-modified "toggle-modified")
+  ;;   ("O" ibuffer-do-occur "occur")
+  ;;   ("P" ibuffer-do-print "print")
+  ;;   ("Q" ibuffer-do-query-replace "query-replace")
+  ;;   ("R" ibuffer-do-rename-uniquely "rename-uniquely")
+  ;;   ("T" ibuffer-do-toggle-read-only "toggle-read-only")
+  ;;   ("U" ibuffer-do-replace-regexp "replace-regexp")
+  ;;   ("V" ibuffer-do-revert "revert")
+  ;;   ("W" ibuffer-do-view-and-eval "view-and-eval")
+  ;;   ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
+  ;;   ("b" nil "back"))
 
-  (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
-    "Sort"
-    ("i" ibuffer-invert-sorting "invert")
-    ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
-    ("v" ibuffer-do-sort-by-recency "recently used")
-    ("s" ibuffer-do-sort-by-size "size")
-    ("f" ibuffer-do-sort-by-filename/process "filename")
-    ("m" ibuffer-do-sort-by-major-mode "mode")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
+  ;; (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
+  ;;   "Sort"
+  ;;   ("i" ibuffer-invert-sorting "invert")
+  ;;   ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
+  ;;   ("v" ibuffer-do-sort-by-recency "recently used")
+  ;;   ("s" ibuffer-do-sort-by-size "size")
+  ;;   ("f" ibuffer-do-sort-by-filename/process "filename")
+  ;;   ("m" ibuffer-do-sort-by-major-mode "mode")
+  ;;   ("b" hydra-ibuffer-main/body "back" :color blue))
 
-  (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
-    "Filter"
-    ("m" ibuffer-filter-by-used-mode "mode")
-    ("M" ibuffer-filter-by-derived-mode "derived mode")
-    ("n" ibuffer-filter-by-name "name")
-    ("c" ibuffer-filter-by-content "content")
-    ("e" ibuffer-filter-by-predicate "predicate")
-    ("f" ibuffer-filter-by-filename "filename")
-    (">" ibuffer-filter-by-size-gt "size")
-    ("<" ibuffer-filter-by-size-lt "size")
-    ("/" ibuffer-filter-disable "disable")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
+  ;; (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
+  ;;   "Filter"
+  ;;   ("m" ibuffer-filter-by-used-mode "mode")
+  ;;   ("M" ibuffer-filter-by-derived-mode "derived mode")
+  ;;   ("n" ibuffer-filter-by-name "name")
+  ;;   ("c" ibuffer-filter-by-content "content")
+  ;;   ("e" ibuffer-filter-by-predicate "predicate")
+  ;;   ("f" ibuffer-filter-by-filename "filename")
+  ;;   (">" ibuffer-filter-by-size-gt "size")
+  ;;   ("<" ibuffer-filter-by-size-lt "size")
+  ;;   ("/" ibuffer-filter-disable "disable")
+  ;;   ("b" hydra-ibuffer-main/body "back" :color blue))
 
-  (define-key ibuffer-mode-map "." 'hydra-ibuffer-main/body)
+  ;; (define-key ibuffer-mode-map "." 'hydra-ibuffer-main/body)
 #+END_SRC
 
 *** pdf-tools
 #+BEGIN_SRC emacs-lisp
-  (defhydra hydra-pdftools (:color blue :hint nil)
-    "
-                                                                        ╭───────────┐
-         Move  History   Scale/Fit     Annotations  Search/Link    Do   │ PDF Tools │
-     ╭──────────────────────────────────────────────────────────────────┴───────────╯
-           ^^_g_^^      _B_    ^↧^    _+_    ^ ^     [_al_] list    [_s_] search    [_u_] revert buffer
-           ^^^↑^^^      ^↑^    _H_    ^↑^  ↦ _W_ ↤   [_am_] markup  [_o_] outline   [_i_] info
-           ^^_p_^^      ^ ^    ^↥^    _0_    ^ ^     [_at_] text    [_F_] link      [_d_] dark mode
-           ^^^↑^^^      ^↓^  ╭─^─^─┐  ^↓^  ╭─^ ^─┐   [_ad_] delete  [_f_] search link
-      _h_ ←pag_e_→ _l_  _N_  │ _P_ │  _-_    _b_     [_aa_] dired
-           ^^^↓^^^      ^ ^  ╰─^─^─╯  ^ ^  ╰─^ ^─╯   [_y_]  yank
-           ^^_n_^^      ^ ^  _r_eset slice box
-           ^^^↓^^^
-           ^^_G_^^
-     --------------------------------------------------------------------------------
-          "
-    ("\\" hydra-master/body "back")
-    ("<ESC>" nil "quit")
-    ("al" pdf-annot-list-annotations)
-    ("ad" pdf-annot-delete)
-    ("aa" pdf-annot-attachment-dired)
-    ("am" pdf-annot-add-markup-annotation)
-    ("at" pdf-annot-add-text-annotation)
-    ("y"  pdf-view-kill-ring-save)
-    ("+" pdf-view-enlarge :color red)
-    ("-" pdf-view-shrink :color red)
-    ("0" pdf-view-scale-reset)
-    ("H" pdf-view-fit-height-to-window)
-    ("W" pdf-view-fit-width-to-window)
-    ("P" pdf-view-fit-page-to-window)
-    ("n" pdf-view-next-page-command :color red)
-    ("p" pdf-view-previous-page-command :color red)
-    ("d" pdf-view-dark-minor-mode)
-    ("b" pdf-view-set-slice-from-bounding-box)
-    ("r" pdf-view-reset-slice)
-    ("g" pdf-view-first-page)
-    ("G" pdf-view-last-page)
-    ("e" pdf-view-goto-page)
-    ("o" pdf-outline)
-    ("s" pdf-occur)
-    ("i" pdf-misc-display-metadata)
-    ("u" pdf-view-revert-buffer)
-    ("F" pdf-links-action-perfom)
-    ("f" pdf-links-isearch-link)
-    ("B" pdf-history-backward :color red)
-    ("N" pdf-history-forward :color red)
-    ("l" image-forward-hscroll :color red)
-    ("h" image-backward-hscroll :color red))
+  ;; (defhydra hydra-pdftools (:color blue :hint nil)
+  ;;   "
+  ;;                                                                       ╭───────────┐
+  ;;        Move  History   Scale/Fit     Annotations  Search/Link    Do   │ PDF Tools │
+  ;;    ╭──────────────────────────────────────────────────────────────────┴───────────╯
+  ;;          ^^_g_^^      _B_    ^↧^    _+_    ^ ^     [_al_] list    [_s_] search    [_u_] revert buffer
+  ;;          ^^^↑^^^      ^↑^    _H_    ^↑^  ↦ _W_ ↤   [_am_] markup  [_o_] outline   [_i_] info
+  ;;          ^^_p_^^      ^ ^    ^↥^    _0_    ^ ^     [_at_] text    [_F_] link      [_d_] dark mode
+  ;;          ^^^↑^^^      ^↓^  ╭─^─^─┐  ^↓^  ╭─^ ^─┐   [_ad_] delete  [_f_] search link
+  ;;     _h_ ←pag_e_→ _l_  _N_  │ _P_ │  _-_    _b_     [_aa_] dired
+  ;;          ^^^↓^^^      ^ ^  ╰─^─^─╯  ^ ^  ╰─^ ^─╯   [_y_]  yank
+  ;;          ^^_n_^^      ^ ^  _r_eset slice box
+  ;;          ^^^↓^^^
+  ;;          ^^_G_^^
+  ;;    --------------------------------------------------------------------------------
+  ;;         "
+  ;;   ("\\" hydra-master/body "back")
+  ;;   ("<ESC>" nil "quit")
+  ;;   ("al" pdf-annot-list-annotations)
+  ;;   ("ad" pdf-annot-delete)
+  ;;   ("aa" pdf-annot-attachment-dired)
+  ;;   ("am" pdf-annot-add-markup-annotation)
+  ;;   ("at" pdf-annot-add-text-annotation)
+  ;;   ("y"  pdf-view-kill-ring-save)
+  ;;   ("+" pdf-view-enlarge :color red)
+  ;;   ("-" pdf-view-shrink :color red)
+  ;;   ("0" pdf-view-scale-reset)
+  ;;   ("H" pdf-view-fit-height-to-window)
+  ;;   ("W" pdf-view-fit-width-to-window)
+  ;;   ("P" pdf-view-fit-page-to-window)
+  ;;   ("n" pdf-view-next-page-command :color red)
+  ;;   ("p" pdf-view-previous-page-command :color red)
+  ;;   ("d" pdf-view-dark-minor-mode)
+  ;;   ("b" pdf-view-set-slice-from-bounding-box)
+  ;;   ("r" pdf-view-reset-slice)
+  ;;   ("g" pdf-view-first-page)
+  ;;   ("G" pdf-view-last-page)
+  ;;   ("e" pdf-view-goto-page)
+  ;;   ("o" pdf-outline)
+  ;;   ("s" pdf-occur)
+  ;;   ("i" pdf-misc-display-metadata)
+  ;;   ("u" pdf-view-revert-buffer)
+  ;;   ("F" pdf-links-action-perfom)
+  ;;   ("f" pdf-links-isearch-link)
+  ;;   ("B" pdf-history-backward :color red)
+  ;;   ("N" pdf-history-forward :color red)
+  ;;   ("l" image-forward-hscroll :color red)
+  ;;   ("h" image-backward-hscroll :color red))
 #+END_SRC
 
 ** Custom keybindings
@@ -1007,7 +1025,7 @@ _SPC_ cancel
   (global-set-key (kbd "C-z") 'z-map)
 
   (define-key z-map (kbd "c") 'hydra-multiple-cursors/body)
-  (define-key z-map (kbd "f") 'hydra-hs/body)
+  ;; (define-key z-map (kbd "f") 'hydra-hs/body)
   (define-key z-map (kbd "m") 'mu4e)
   (define-key z-map (kbd "t") 'vterm)
 
