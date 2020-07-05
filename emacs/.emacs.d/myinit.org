@@ -475,7 +475,7 @@
           ))
 #+END_SRC
 
-* Coding
+* Programming
 ** General
 #+BEGIN_SRC emacs-lisp
 ;; General coding
@@ -504,7 +504,7 @@
     ;;                               ; to show it
     ;;       company-tooltip-align-annotations t)
     :config
-    (setq company-minimum-prefix-length 3)
+    (setq company-minimum-prefix-length 1)
 
     (add-hook 'after-init-hook 'global-company-mode)
     :custom
@@ -512,17 +512,44 @@
     )
 #+END_SRC
 
+** lsp
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-lsp)
+  (require 'lsp-clients)
+  (use-package lsp-mode
+    :after helm helm-lsp
+    :hook ((prog-mode . lsp)
+           (lsp-mode . lsp-enable-which-key-integration)))
+  (setq lsp-clients-clangd-executable "/usr/local/Cellar/llvm/10.0.0_3/bin/clangd")
+  (setq gc-cons-threshold 100000000)
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
+
+  (use-package lsp-ui
+    :config
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+  ;; see https://emacs-lsp.github.io/lsp-mode/page/performance/
+  (setq lsp-prefer-capf t)
+  ;; (use-package company-lsp
+  ;;   :after company
+  ;;   :config (push 'company-lsp company-backends)
+  ;;   ;; Disable client-side cache because the LSP server does a better job.
+  ;;   (setq company-lsp-async t
+  ;;         company-lsp-cache-candidates nil)
+  ;;   )
+#+END_SRC
 ** exec-path-from-shell
 #+BEGIN_SRC emacs-lisp
-;;(setq explicit-shell-file-name "/bin/bash")
-;;(setq shell-file-name "bash")
-;; exec-path-from-shell
-;;(setenv "SHELL" "/bin/bash")
-(use-package exec-path-from-shell)
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-envs '("PATH")
-				  ))
+  ;;(setq explicit-shell-file-name "/bin/bash")
+  ;;(setq shell-file-name "bash")
+  ;; exec-path-from-shell
+  ;;(setenv "SHELL" "/bin/bash")
+  (use-package exec-path-from-shell)
+  (setq exec-path-from-shell-arguments '("-l"))
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize)
+    (exec-path-from-shell-copy-envs '("PATH")
+                                    ))
 #+END_SRC
 
 ** vterm
@@ -642,7 +669,7 @@
      mu4e-compose-dont-reply-to-self t
      ;; allow for updating mail using 'U' in the main view:
      mu4e-get-mail-command "mbsync -a"
-     mu4e-update-interval 1800
+     ;; mu4e-update-interval 1800
      ;; show images
      mu4e-show-images t
      mu4e-attachments-dir "~/Downloads"

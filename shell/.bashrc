@@ -3,6 +3,7 @@ alias v='mvim -v'
 alias vim='mvim -v'
 
 export GPG_TTY=$(tty)
+export PATH="/usr/local/opt/llvm/bin:$PATH"
 # --- set gcc as primary compiler --- #
 #export CC=/usr/local/bin/gcc-9
 #export CXX=/usr/local/bin/g++-9
