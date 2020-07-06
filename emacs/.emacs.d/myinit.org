@@ -136,18 +136,18 @@
 
 ** Indentation
 #+BEGIN_SRC emacs-lisp
-  ;; (electric-indent-mode 1)
-  ;; ;; auto-indent on paste
-  ;; (dolist (command '(yank yank-pop))
-  ;;   (eval `(defadvice ,command (after indent-region activate)
-  ;; 	   (and (not current-prefix-arg)
-  ;; 		(member major-mode '(emacs-lisp-mode python-mode c-mode c++-mode))
-  ;; 		(let ((mark-even-if-inactive transient-mark-mode))
-  ;; 		  (indent-region (region-beginning) (region-end) nil))))))
+  (electric-indent-mode 1)
+  ;; auto-indent on paste
+  (dolist (command '(yank yank-pop))
+    (eval `(defadvice ,command (after indent-region activate)
+             (and (not current-prefix-arg)
+                  (member major-mode '(emacs-lisp-mode python-mode c-mode c++-mode))
+                  (let ((mark-even-if-inactive transient-mark-mode))
+                    (indent-region (region-beginning) (region-end) nil))))))
 
   ;; aggressive-indent
-  (use-package aggressive-indent
-    :hook (prog-mode . aggressive-indent-mode))
+  ;; (use-package aggressive-indent
+  ;;   :hook (prog-mode . aggressive-indent-mode))
 #+END_SRC
 
 ** Parenthesis
@@ -253,6 +253,13 @@
     ;; move to trash instead of shell:rm
     (delete-by-moving-to-trash t)
     (dired-listing-switches "-alh")
+    ;; reuse same buffer when visiting folders
+    (put 'dired-find-alternate-file 'disabled nil)
+    ;; above doesn't help with '^'. hack:
+    (add-hook 'dired-mode-hook
+              (lambda ()
+                (define-key dired-mode-map (kbd "^")
+                  (lambda () (interactive) (find-alternate-file "..")))))
     )
 
   ;; toggle hidden files
@@ -367,22 +374,22 @@
 
 ** projectile
 #+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :after helm
-  :config
-  ;;  (projectile-mode +1)
-  (helm-projectile-on)
-  (projectile-global-mode)
-  (setq projectile-completion-system 'helm)
-  ;; disable caching if working in git folder
-  ;; https://eklitzke.org/making-helm-projectile-find-file-fast-in-large-projects
-  (setq projectile-enable-caching t)
-   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-   (setq projectile-switch-project-action 'helm-projectile)
-   )
-;; treat current directory as root
-(setq projectile-require-project-root nil)
-(setq projectile-mode-line '(:eval (projectile-project-name)))
+  (use-package projectile
+    :after helm
+    :config
+    ;;  (projectile-mode +1)
+    (helm-projectile-on)
+    (projectile-global-mode)
+    (setq projectile-completion-system 'helm)
+    ;; disable caching if working in git folder
+    ;; https://eklitzke.org/making-helm-projectile-find-file-fast-in-large-projects
+    (setq projectile-enable-caching t)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (setq projectile-switch-project-action 'helm-projectile)
+    )
+  ;; treat current directory as root
+  (setq projectile-require-project-root nil)
+  (setq projectile-mode-line '(:eval (projectile-project-name)))
 #+END_SRC
 
 * Buffers and Window
@@ -518,7 +525,8 @@
   (require 'lsp-clients)
   (use-package lsp-mode
     :after helm helm-lsp
-    :hook ((prog-mode . lsp)
+    :hook ((c++-mode . lsp)
+           (c-mode . lsp)
            (lsp-mode . lsp-enable-which-key-integration)))
   (setq lsp-clients-clangd-executable "/usr/local/Cellar/llvm/10.0.0_3/bin/clangd")
   (setq gc-cons-threshold 100000000)
