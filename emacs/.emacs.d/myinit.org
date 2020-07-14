@@ -32,6 +32,12 @@
                      "~/.netrc"))
 #+END_SRC
 
+** Miscellaneous
+#+BEGIN_SRC emacs-lisp
+  ;; contents of the clipboard are stored in the kill ring and can
+  ;; be retrieved from there (e.g. with M-y)
+  (setq save-interprogram-paste-before-kill t)
+#+END_SRC
 * Visual Config
 ** Visual Configuration
 #+BEGIN_SRC emacs-lisp
@@ -115,11 +121,13 @@
   (setq custom-safe-themes t)
   ;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
   (use-package doom-themes
-    :config
+    ;; :config
     ;; (load-theme 'doom-gruvbox t)
     ;; (load-theme 'doom-nord t)
     )
-  (load-theme 'sanityinc-solarized-dark)
+  (use-package color-theme-sanityinc-solarized)
+  ;; (load-theme 'sanityinc-solarized-dark)
+  (load-theme 'doom-one-light)
 
   ;; (use-package solaire-mode
   ;;   :custom (solaire-mode-remap-fringe t)
@@ -202,6 +210,15 @@
 (save-place-mode t)
 #+END_SRC
 
+** Cursor Position
+#+BEGIN_SRC emacs-lisp
+  ;; remember last cursor position in file
+  (use-package saveplace
+    :config
+    (setq save-place-forget-unreadable-files t)
+    (save-place-mode 1))
+#+END_SRC
+
 ** expand-region
 #+BEGIN_SRC emacs-lisp
 (use-package expand-region
@@ -216,6 +233,7 @@
   (global-set-key (kbd "C-'") 'avy-goto-char-2)
   (global-set-key (kbd "M-g f") 'avy-goto-line)
 #+END_SRC
+
 ** undo-tree
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
@@ -245,11 +263,9 @@
     ;; Kill buffers of files/directories that are deleted in dired.
     (dired-clean-up-buffers-too t)
 
-    ;; Always copy directories recursively instead of asking every time.
+    ;; Always copy/delete directories recursively instead of asking every time.
     (dired-recursive-copies 'always)
-
-    ;; Ask before recursively deleting a directory, though.
-    (dired-recursive-deletes 'top)
+    (dired-recursive-deletes 'always)
     ;; move to trash instead of shell:rm
     (delete-by-moving-to-trash t)
     (dired-listing-switches "-alh")
@@ -286,6 +302,25 @@
     :bind (:map dired-mode-map
                 ("<backtab>" . dired-subtree-cycle)
                 ("<tab>" . dired-subtree-toggle)))
+
+  ;; use C-c C-q to edit dired buffer, C-c C-c to save changes
+  (use-package wdired
+    :after dired
+    :config
+    (setq wdired-allow-to-change-permissions t))
+
+  ;; Preview using 'P'
+  (use-package peep-dired
+    :ensure t
+    :defer t ; don't access `dired-mode-map' until `peep-dired' is loaded
+    :config
+    (setq peep-dired-cleanup-on-disable t)
+    (setq peep-dired-cleanup-eagerly t)
+    (setq peep-dired-enable-on-directories nil)
+    (setq peep-dired-ignored-extensions
+          '("mkv" "webm" "mp4" "mp3" "ogg" "iso"))
+    :bind (:map dired-mode-map
+                ("P" . peep-dired)))
 #+END_SRC
 
 ** tramp
@@ -378,6 +413,7 @@
     :after helm
     :config
     ;;  (projectile-mode +1)
+    (use-package helm-projectile)
     (helm-projectile-on)
     (projectile-global-mode)
     (setq projectile-completion-system 'helm)
@@ -581,7 +617,8 @@
 
 ** git
 #+BEGIN_SRC emacs-lisp
-(use-package magit)
+(use-package magit
+:bind ("C-c g" . magit-status))
 
 (use-package git-gutter
   :delight
