@@ -23,7 +23,10 @@
   (column-number-mode 1)                            ; Show the column number
   (display-time-mode 1)                             ; Enable time in the mode-line
   (setq vc-follow-symlinks t)                       ; always follow symlinks
+  ;; start fully maximized
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+END_SRC
+
 ** Authentication
 #+BEGIN_SRC emacs-lisp
 (setq auth-sources '("~/.gnupg/shared/authinfo.gpg"
@@ -38,6 +41,7 @@
   ;; be retrieved from there (e.g. with M-y)
   (setq save-interprogram-paste-before-kill t)
 #+END_SRC
+
 * Visual Config
 ** Visual Configuration
 #+BEGIN_SRC emacs-lisp
@@ -434,6 +438,7 @@
     (when (fboundp 'winner-mode)
       (winner-mode 1))
 #+END_SRC
+
 ** ace-window
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
@@ -450,6 +455,7 @@
          ("C-c k" . windmove-up)
          ("C-c l" . windmove-right)))
 #+END_SRC
+
 ** ibuffer
 #+BEGIN_SRC emacs-lisp
   (use-package ibuffer
@@ -582,6 +588,7 @@
   ;;         company-lsp-cache-candidates nil)
   ;;   )
 #+END_SRC
+
 ** exec-path-from-shell
 #+BEGIN_SRC emacs-lisp
   ;;(setq explicit-shell-file-name "/bin/bash")
@@ -633,6 +640,7 @@
 #+BEGIN_SRC emacs-lisp
 (use-package try)
 #+END_SRC
+
 ** multiple-cursors
 #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors)
@@ -818,6 +826,7 @@
   (setq eww-search-prefix "https://www.startpage.com/do/dsearch?query=")
   (setq eww-download-directory "~/Downloads")
 #+END_SRC
+
 * Keybindings
 ** key-chord
 #+BEGIN_SRC emacs-lisp
@@ -1110,6 +1119,7 @@
   (global-set-key (kbd "\e\ee")
                   (lambda () (interactive) (find-file "~/.emacs.d/myinit.org")))
 #+END_SRC
+
 * org-mode
 ** General
 #+BEGIN_SRC emacs-lisp
