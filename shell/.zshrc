@@ -19,16 +19,16 @@ alias tobuy="vim $HOME/Desktop/notes/Todo/ToBuy.md"
 
 alias getmail="offlineimap && mu index"
 # --- set gcc as primary compiler --- #
-#export CC=/usr/local/bin/gcc-9
-#export CXX=/usr/local/bin/g++-9
-#export CPP=/usr/local/bin/cpp-9
-#export LD=/usr/local/bin/gcc-9
-#alias c++=/usr/local/bin/c++-9
-#alias g++=/usr/local/bin/g++-9
-#alias gcc=/usr/local/bin/gcc-9
-#alias cpp=/usr/local/bin/cpp-9
-#alias ld=/usr/local/bin/gcc-9
-#alias cc=/usr/local/bin/gcc-9
+export CC=/usr/local/Cellar/gcc@9/9.3.0/bin/gcc-9
+export CXX=/usr/local/Cellar/gcc@9/9.3.0/bin/g++-9
+export CPP=/usr/local/Cellar/gcc@9/9.3.0/bin/cpp-9
+export LD=/usr/local/Cellar/gcc@9/9.3.0/bin/gcc-9
+alias c++=/usr/local/Cellar/gcc@9/9.3.0/bin/c++-9
+alias g++=/usr/local/Cellar/gcc@9/9.3.0/bin/g++-9
+alias gcc=/usr/local/Cellar/gcc@9/9.3.0/bin/gcc-9
+alias cpp=/usr/local/Cellar/gcc@9/9.3.0/bin/cpp-9
+alias ld=/usr/local/Cellar/gcc@9/9.3.0/bin/gcc-9
+alias cc=/usr/local/Cellar/gcc@9/9.3.0/bin/gcc-9
 # --- set gcc as primary compiler --- #
 
 # python2.7 path
@@ -79,4 +79,4 @@ vterm_prompt_end() {
 }
 setopt PROMPT_SUBST
 PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
-export PATH="/usr/local/opt/llvm/bin:/usr/local/smlnj/bin:$PATH"
+export PATH="/usr/local/opt/llvm/bin:/usr/local/smlnj/bin:$HOME/.emacs.d/bin:$PATH"

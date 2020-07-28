@@ -43,7 +43,7 @@
 #+END_SRC
 
 * Visual Config
-** Visual Configuration
+** COMMENT Visual Configuration
 #+BEGIN_SRC emacs-lisp
   ;; Disable menubar, scrollbar and toolbar
   (menu-bar-mode -1)
@@ -966,7 +966,7 @@
   ;; "
   ;;   ("j" ibuffer-forward-line)
   ;;   ("RET" ibuffer-visit-buffer :color blue)
-  ;;   ("k" ibuffer-backward-line)
+n  ;;   ("k" ibuffer-backward-line)
 
   ;;   ("m" ibuffer-mark-forward)
   ;;   ("u" ibuffer-unmark-forward)
