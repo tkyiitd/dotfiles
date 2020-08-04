@@ -20,11 +20,10 @@
   (map! "M-v" #'View-scroll-half-page-backward))
 
 ;; open window vertically
-(setq split-height-threshold nil)
-(setq split-width-threshold 0)
+;; (setq split-height-threshold nil)
+;; (setq split-width-threshold 0)
 
-(setq auth-sources '("~/.authinfo.gpg")
-      auth-source-cache-expiry nil)
+(setq auth-source-cache-expiry nil)
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -66,7 +65,7 @@
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e/")
 (use-package! mu4e
-  :commands mu4e
+  :commands mu4e mu4e-compose-new
   :config
   ;;(setq! mu4e-maildir (expand-file-name "~/mail/tkyiitd"))
   (set-email-account! "tkyiitd"
@@ -84,16 +83,9 @@
            ("/[Gmail]/Bin"       . ?t)))
   )
 
-(after! dired
-  dired-dwim-target t
-  dired-recursive-copies (quote always)
-  dired-recursive-deletes (quote top))
-
-;; TODO: see macro use-package and see if defer should be used
-
 (use-package! peep-dired
-  :commands peep-dired
-  :defer t ; don't access `dired-mode-map' until `peep-dired' is loaded
+  :defer
+  :after dired
   :config
   (setq peep-dired-cleanup-on-disable t)
   (setq peep-dired-cleanup-eagerly t)
@@ -104,8 +96,11 @@
          ("P" . peep-dired)))
 
 (use-package! hungry-delete
-  :config(global-hungry-delete-mode))
+  :config
+  (global-hungry-delete-mode)
+  )
 
-(after! ace-window
-  (map! "M-o" #'ace-window)
+(use-package! ace-window
+  :config
+  (global-set-key (kbd "M-o") 'ace-window)
   )
