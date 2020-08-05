@@ -79,4 +79,5 @@ vterm_prompt_end() {
 }
 setopt PROMPT_SUBST
 PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
-export PATH="/usr/local/opt/llvm/bin:/usr/local/smlnj/bin:$HOME/.emacs.d/bin:$PATH"
+export PATH="/usr/local/opt/llvm/bin:/usr/local/smlnj/bin:$HOME/.emacs.d/bin:/usr/local/Cellar/go/1.14.5/bin:$PATH"
+export GOPATH=$HOME/go
