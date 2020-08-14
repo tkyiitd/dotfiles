@@ -56,8 +56,8 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 
 " I like these 3 themes
 "colorscheme spacemacs-theme
-"colorscheme hybrid 
-colorscheme papercolor
+colorscheme hybrid 
+"colorscheme papercolor
 
 set hidden      " allow me to have buffers with unsaved changes.
 set autoread    " when a file has changed on disk, just load it. Don't ask.

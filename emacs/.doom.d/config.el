@@ -11,13 +11,13 @@
   )
 
 ;; contents of the clipboard are stored in the kill ring and can
-;; be retrieved from there (e.g. with M-y)
-(setq save-interprogram-paste-before-kill t)
+;; be retrieved from there (e.g. with M-y), don't use this
+;; (setq save-interprogram-paste-before-kill t)
 
 ;; scroll half pages
-(after! view
-  (map! "C-v" #'View-scroll-half-page-forward)
-  (map! "M-v" #'View-scroll-half-page-backward))
+;; (after! view
+;;   (map! "C-v" #'View-scroll-half-page-forward)
+;;   (map! "M-v" #'View-scroll-half-page-backward))
 
 ;; open window vertically
 ;; (setq split-height-threshold nil)
@@ -55,9 +55,11 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(map! "C-h SPC" #'counsel-mark-ring)
+
 (setq doom-theme 'doom-one
       org-directory "~/org"
-      display-line-numbers-type nil
+      ;; display-line-numbers-type nil
 
       company-idle-delay nil
       lsp-ui-sideline-enable nil
